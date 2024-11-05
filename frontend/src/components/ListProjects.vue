@@ -26,10 +26,15 @@
           </v-row>
         </v-toolbar>
         <v-card-text>
-          <v-data-table :search="search" :item-key="'id'"> 
-            
+          <v-data-table
+            :headers="headers"
+            :items="projects"
+            :search="search"
+            :item-key="'id'"
+          >
           </v-data-table>
         </v-card-text>
+       
         <v-card-actions class="d-flex justify-center">
          
           <v-btn class="mx-2" color="gray" @click="returnToHomePage"
@@ -42,6 +47,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+axios.defaults.baseURL = "http://127.0.0.1:8000/";
 export default {
   name: "ListProjects",
 
@@ -50,15 +57,72 @@ export default {
       search: "",
       isAdmin: false,
       isHovered: false,
+      headers: this.getHeaders(),
       clients: [],
       projects: [],
       estimations: [],
     };
   },
   methods:{
+    getHeaders() {
+      const headers = [
+        { text: "L.p.", align: "start", value: "id" },
+        { text: "Klient", value: "client_name" },
+        { text: "Nazwa Projektu", value: "name" },
+        {
+          text: "Szacunkowa Wartość",
+          value: "total_estimation",
+          sortable: false,
+        },
+        { text: "Data dodania", value: "formatted_created_at" },
+      ];
+
+      return headers;
+    },
+    
+    async fetchProjects() {
+      try {
+        const response = await axios.get("projects");
+        this.projects = response.data.map((project) => ({
+          id: project.id,
+          name: project.name,
+          client_id: project.client_id,
+          client_name: project.client ? project.client.name : "Brak klienta",
+          formatted_created_at: this.formatDate(project.created_at),
+          created_at: project.created_at,
+        }));
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    },
+    async fetchClients() {
+      try {
+        const clientsWithProjects = this.projects.map((project) => ({
+          id: project.client_id,
+          name: project.client_name,
+        }));
+
+        const uniqueClients = clientsWithProjects.filter(
+          (client, index, self) =>
+            index === self.findIndex((c) => c.id === client.id)
+        );
+
+        this.clients = uniqueClients;
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    },
+    formatDate(date) {
+      const options = { day: "numeric", month: "short", year: "numeric" };
+      return new Date(date).toLocaleDateString("pl-PL", options);
+    },
     returnToHomePage() {
       this.$router.push("/");
     },
+  },
+  async created() {
+    await this.fetchProjects();
+    await this.fetchClients();
   },
 };
 </script>
