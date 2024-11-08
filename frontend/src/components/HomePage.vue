@@ -2,6 +2,9 @@
   <v-app>
     <v-container fluid>
       <v-row no-gutters>
+        <v-col cols="auto">
+          <NavigationDrawer />
+        </v-col>
         <v-col>
           <v-container>
             <v-row justify="center">
@@ -67,9 +70,13 @@
 import user from "@/assets/user.png";
 import project from "@/assets/project.png";
 import estimation from "@/assets/budgeting.png";
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
 
 export default {
   name: 'HomePage',
+  components: {
+    NavigationDrawer,
+  },
   data() {
     return {
       user: user,
@@ -98,6 +105,11 @@ export default {
 </script>
 
 <style>
+.v-navigation-drawer:hover .image-woman {
+  width: 100px;
+  height: 100px;
+}
+
 .headline {
   justify-content: center;
 }
