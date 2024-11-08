@@ -30,6 +30,5 @@ export default new Router({
       name: 'ListEstimations',
       component: ListEstimations,
     },
-    // Add other routes here
   ],
 });
