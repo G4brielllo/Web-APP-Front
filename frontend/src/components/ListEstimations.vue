@@ -39,6 +39,7 @@
 
 <script>
 import axios from "axios";
+axios.defaults.baseURL = "http://127.0.0.1:8000/";
 
 export default {
   name: "ListEstimation",
@@ -46,6 +47,8 @@ export default {
     return {
       search: "",
       estimations: [],
+      clients: [],
+      projects: [],
       isAdmin: false,
       isHovered: false,
     };
@@ -55,8 +58,8 @@ export default {
       const baseHeaders = [
         { text: "L.p.", align: "start", sortable: false, value: "id" },
         { text: "Nazwa", value: "name" },
-        { text: "Projekt", value: "project.name" },
-        { text: "Klient", value: "client.name" },
+        { text: "Projekt", value: "project_name" }, 
+        { text: "Klient", value: "client_name" }, 
         { text: "Wycena", value: "type" },
         { text: "Kwota", value: "amount" },
         { text: "Data wykonania", value: "date" },
@@ -66,44 +69,79 @@ export default {
     },
   },
   mounted() {
+    this.fetchClients();
+    this.fetchProjects();
     this.fetchEstimations();
   },
   methods: {
 
-    async fetchEstimations() {
+    async fetchClients() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/estimations"
-        );
-        this.estimations = response.data.map((estimation) => ({
-          id: estimation.id,
-          name: estimation.name,
-          type: estimation.type,
-          amount: estimation.amount,
-          date: this.formatDate(estimation.date),
-          project: estimation.project,
-          // client: estimation.project.client,
-        }));
+        const response = await axios.get("clients");
+        this.clients = response.data;
+        console.log("Pobrani klienci:", this.clients);
       } catch (error) {
-        console.error("Error fetching estimations:", error);
+        console.error("Błąd podczas pobierania klientów:", error);
       }
     },
-    
+
+    async fetchProjects() {
+      try {
+        const response = await axios.get("projects");
+        this.projects = response.data;
+        console.log("Pobrane projekty:", this.projects);
+      } catch (error) {
+        console.error("Błąd podczas pobierania projektów:", error);
+      }
+    },
+
+    async fetchEstimations() {
+      try {
+        const response = await axios.get("estimations");
+        console.log("Pobrane wyceny:", response.data);
+
+        this.estimations = response.data.map((estimation) => {
+          const client = this.clients.find(client => client.id === estimation.client_id);
+          const project = this.projects.find(project => project.id === estimation.project_id);
+
+          console.log("Znaleziony klient:", client); 
+          console.log("Znaleziony projekt:", project);  
+
+          return {
+            id: estimation.id,
+            name: estimation.name,
+            type: estimation.type,
+            client_name: client ? client.name : "Brak klienta",  
+            amount: estimation.amount,
+            date: this.formatDate(estimation.date),
+            project_name: project ? project.name : "Brak projektu", 
+                 };
+        });
+      } catch (error) {
+        console.error("Błąd podczas pobierania wycen:", error);
+      }
+    },
+
     returnToHomePage() {
       this.$router.push("/");
     },
+
     goToAddEstimation() {
       this.$router.push("/addEstimation");
     },
+
     goToAddClient() {
       this.$router.push("/addClient");
     },
+
     goToAddProject() {
       this.$router.push("/addProject");
     },
+
     editItem(item) {
       this.$router.push({ path: "/addEstimation", query: { id: item.id } });
     },
+
     formatDate(date) {
       const options = { day: "numeric", month: "long", year: "numeric" };
       return new Date(date).toLocaleDateString("pl-PL", options);

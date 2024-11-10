@@ -60,7 +60,7 @@ export default {
   methods: {
     async fetchClients() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/clients");
+        const response = await axios.get("clients");
         this.clients = response.data.map((client) => ({
           id: client.id,
           name: client.name,

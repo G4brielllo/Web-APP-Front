@@ -34,9 +34,8 @@
           >
           </v-data-table>
         </v-card-text>
-       
+
         <v-card-actions class="d-flex justify-center">
-         
           <v-btn class="mx-2" color="gray" @click="returnToHomePage"
             >Wróć</v-btn
           >
@@ -47,82 +46,92 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
+
 export default {
   name: "ListProjects",
 
   data() {
     return {
       search: "",
-      isAdmin: false,
-      isHovered: false,
       headers: this.getHeaders(),
       clients: [],
-      projects: [],
       estimations: [],
+      projects: [],
     };
   },
-  methods:{
+
+  methods: {
     getHeaders() {
-      const headers = [
+      return [
         { text: "L.p.", align: "start", value: "id" },
         { text: "Klient", value: "client_name" },
         { text: "Nazwa Projektu", value: "name" },
-        {
-          text: "Szacunkowa Wartość",
-          value: "total_estimation",
-          sortable: false,
+        { text: "Szacunkowa Wartość", value: "total_estimation", sortable: false,
         },
         { text: "Data dodania", value: "formatted_created_at" },
       ];
-
-      return headers;
     },
-    
     async fetchProjects() {
       try {
         const response = await axios.get("projects");
-        this.projects = response.data.map((project) => ({
-          id: project.id,
-          name: project.name,
-          client_id: project.client_id,
-          client_name: project.client ? project.client.name : "Brak klienta",
-          formatted_created_at: this.formatDate(project.created_at),
-          created_at: project.created_at,
-        }));
+        this.projects = response.data.map((project) => {
+      
+          const client = this.clients.find(
+            (client) => client.id === project.client_id  
+          );
+          const estimation = this.estimations.find(
+            (estimate) => estimate.project_id === project.id
+          );
+          
+          return {
+            id: project.id,
+            name: project.name,
+            client_id: project.client_id,
+            client_name: client ? client.name : "Brak klienta",
+            total_estimation : estimation 
+            ? estimation.amount 
+            : "brak wyceny",
+            formatted_created_at: this.formatDate(project.created_at),
+          };
+        });
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     },
     async fetchClients() {
       try {
-        const clientsWithProjects = this.projects.map((project) => ({
-          id: project.client_id,
-          name: project.client_name,
-        }));
-
-        const uniqueClients = clientsWithProjects.filter(
-          (client, index, self) =>
-            index === self.findIndex((c) => c.id === client.id)
-        );
-
-        this.clients = uniqueClients;
+        const response = await axios.get("clients");
+        this.clients = response.data;
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     },
+    async fetchEstimations(){
+      try{
+        const response = await axios.get("estimations");
+        this.estimations = response.data;
+      }catch(error){
+        console.error("Error fetching clients:", error);
+      }
+    },
+
     formatDate(date) {
       const options = { day: "numeric", month: "short", year: "numeric" };
       return new Date(date).toLocaleDateString("pl-PL", options);
     },
+
     returnToHomePage() {
       this.$router.push("/");
     },
   },
+
   async created() {
-    await this.fetchProjects();
-    await this.fetchClients();
+    await this.fetchClients(); 
+    await this.fetchEstimations();
+    await this.fetchProjects(); 
+  
   },
 };
 </script>
@@ -137,17 +146,14 @@ export default {
   width: 82%;
   max-width: 1200px;
 }
+
 body {
   overflow: hidden;
 }
 
-
 .rounded-image {
   border-radius: 8px;
 }
-
-
-
 
 .user-info {
   padding: 8px;
@@ -157,5 +163,4 @@ body {
 .fill-height {
   height: 100vh;
 }
-
 </style>
