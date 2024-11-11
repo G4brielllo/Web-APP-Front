@@ -32,6 +32,7 @@
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
+          <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
           <v-btn color="gray" @click="returnToHomePage" class="mx-2"
             >Wróć</v-btn
           >
@@ -94,6 +95,9 @@ export default {
     },
     returnToHomePage() {
       this.$router.push("/");
+    },
+    addClient() {
+      this.$router.push("/addClient");
     },
   },
   created() {
