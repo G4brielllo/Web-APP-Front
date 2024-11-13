@@ -3,7 +3,9 @@
     <v-container>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ "Dodaj klienta" }}</v-toolbar-title>
+          <v-toolbar-title>{{
+            isNewClient ? "Dodaj klienta" : "Edytuj klienta"
+          }}</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -36,12 +38,20 @@
                   ></v-textarea>
                 </v-col>
                 <v-col cols="12" sm="6">
-                  <v-textarea
+                  <v-file-input
                     v-model="image"
                     label="Logo"
+                    accept="image/*"
+                    @change="createBase64Image"
                     dense
-                    required
-                  ></v-textarea>
+                  ></v-file-input>
+                  <div v-if="client.logo">
+                    <img
+                      :src="client.logo"
+                      alt="Client Logo"
+                      style="max-width: 100px; max-height: 100px"
+                    />
+                  </div>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
@@ -58,7 +68,7 @@
         </v-card-text>
         <v-card-actions class="compact-actions">
           <v-btn color="gray" @click="saveClient" :disabled="!valid">{{
-            "Dodaj"
+            isNewClient ? "Dodaj" : "Zapisz zmiany"
           }}</v-btn>
           <v-btn color="gray" @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
@@ -68,7 +78,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/axios";
 
 export default {
   data() {
@@ -83,11 +93,53 @@ export default {
       },
       countries: ["Poland", "Germany", "France", "Italy", "Spain"],
       valid: true,
+      isNewClient: true,
       image: null,
+      base64: null,
     };
   },
-  created() {},
+  created() {
+    if (this.$route.query.id) {
+      this.isNewClient = false;
+      this.fetchClientDetails(this.$route.query.id);
+    }
+  },
   methods: {
+    async fetchClientDetails(clientId) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/clients/${clientId}`
+        );
+        const clientData = response.data;
+
+        this.client.id = clientData.id;
+        this.client.name = clientData.name;
+        this.client.email = clientData.email;
+        this.client.description = clientData.description;
+        this.client.country = clientData.country;
+        this.client.logo = clientData.logo;
+
+        if (this.isImageUrl(clientData.logo)) {
+          await this.fetchImageUrl(clientData.logo);
+        }
+      } catch (error) {
+        console.error("Error fetching client details:", error);
+      }
+    },
+
+    async fetchImageUrl(url) {
+      try {
+        const response = await axios.get(url, { responseType: "blob" });
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.base64 = event.target.result;
+        };
+        reader.readAsDataURL(response.data);
+      } catch (error) {
+        console.error("Error fetching image URL:", error);
+      }
+    },
+
     async saveClient() {
       if (this.$refs.form.validate()) {
         try {
@@ -97,12 +149,22 @@ export default {
           formData.append("description", this.client.description);
           formData.append("country", this.client.country);
 
-          let response;
+          if (this.image) {
+            formData.append("logo", this.base64);
+          }
 
-          response = await axios.post(
-            "http://127.0.0.1:8000/api/clients",
-            formData
-          );
+          let response;
+          if (this.isNewClient) {
+            response = await axios.post(
+              "http://127.0.0.1:8000/api/clients",
+              formData
+            );
+          } else {
+            response = await axios.put(
+              `http://127.0.0.1:8000/api/clients/${this.client.id}`,
+              formData
+            );
+          }
 
           if (response.status === 200 || response.status === 201) {
             console.log("Client saved successfully:", response.data);
@@ -129,7 +191,21 @@ export default {
       this.client.description = "";
       this.client.logo = null;
       this.client.country = "";
+      this.base64 = null;
       this.image = null;
+    },
+
+    createBase64Image(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        this.base64 = event.target.result;
+        this.client.logo = this.base64;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    isImageUrl(url) {
+      return url.match(/\.(jpeg|jpg|gif|png)$/) != null;
     },
   },
 };
