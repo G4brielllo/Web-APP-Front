@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import axios from "@/axios";
+import axios from "axios";
 
 export default {
   data() {
@@ -108,7 +108,7 @@ export default {
     async fetchClientDetails(clientId) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/clients/${clientId}`
+          `http://127.0.0.1:8000/clients/${clientId}`
         );
         const clientData = response.data;
 
@@ -156,12 +156,12 @@ export default {
           let response;
           if (this.isNewClient) {
             response = await axios.post(
-              "http://127.0.0.1:8000/api/clients",
+              "http://127.0.0.1:8000/clients",
               formData
             );
           } else {
             response = await axios.put(
-              `http://127.0.0.1:8000/api/clients/${this.client.id}`,
+              `http://127.0.0.1:8000/clients/${this.client.id}`,
               formData
             );
           }
