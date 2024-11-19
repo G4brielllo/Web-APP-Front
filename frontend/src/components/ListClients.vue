@@ -1,5 +1,8 @@
 <template>
   <v-app class="app-container">
+    <v-col cols="auto">
+      <NavigationDrawer />
+    </v-col>
     <v-container class="fill-height d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
@@ -15,11 +18,7 @@
           ></v-text-field>
         </v-toolbar>
         <v-card-text>
-          <v-data-table
-            :headers="headers"
-            :items="clients"
-            :search="search"
-          >
+          <v-data-table :headers="headers" :items="clients" :search="search">
             <template v-slot:[`item.logo`]="{ item }">
               <v-img
                 :src="item.logo"
@@ -29,6 +28,19 @@
                 class="rounded-image"
               ></v-img>
             </template>
+            <template v-slot:[`item.actions`]="{ item }">
+              <template>
+                <v-btn
+                  color="gray"
+                  @click="editItem(item)"
+                  text
+                  class="compact-btn"
+                  >
+                  Edytuj
+                </v-btn>
+                
+              </template>
+              </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
@@ -45,15 +57,20 @@
 <script>
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
+
 export default {
   name: "ListClients",
+  components: {
+    NavigationDrawer,
+  },
 
   data() {
     return {
       search: "",
       headers: this.getHeaders(),
       userRole: null,
-      isAdmin: false,
+      isAdmin: true,
       clients: [],
       isHovered: false,
     };
@@ -68,7 +85,6 @@ export default {
           logo: client.logo,
           country: client.country,
           formatted_created_at: this.formatDate(client.created_at),
-
         }));
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -87,11 +103,19 @@ export default {
         { text: "Data dodania", value: "formatted_created_at" },
       ];
 
-      if (this.isAdmin) {
+     
         baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
-      }
+  
 
       return baseHeaders;
+    },
+    editItem(item) {
+      this.$router.push({
+        path: "/addClient",
+        query: {
+          id: item.id,
+        },
+      });
     },
     returnToHomePage() {
       this.$router.push("/");
@@ -99,6 +123,7 @@ export default {
     addClient() {
       this.$router.push("/addClient");
     },
+   
   },
   created() {
     this.fetchClients();
@@ -108,7 +133,6 @@ export default {
 
 <style scoped>
 @import "~@mdi/font/css/materialdesignicons.css";
-
 
 .fill-height {
   height: 100vh;

@@ -1,5 +1,8 @@
 <template>
   <v-app class="app-container">
+    <v-col cols="auto">
+      <NavigationDrawer />
+    </v-col>
     <v-container class="fill-height justify-center">
       <v-card class="expanded-card">
         <v-toolbar color="black" dark>
@@ -36,6 +39,7 @@
         </v-card-text>
 
         <v-card-actions class="d-flex justify-center">
+          <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
           <v-btn class="mx-2" color="gray" @click="returnToHomePage"
             >Wróć</v-btn
           >
@@ -48,9 +52,13 @@
 <script>
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
 
 export default {
   name: "ListProjects",
+  components: {
+    NavigationDrawer,
+  },
 
   data() {
     return {
@@ -116,7 +124,9 @@ export default {
         console.error("Error fetching clients:", error);
       }
     },
-
+    addProject() {
+      this.$router.push("/addProject");
+    },
     formatDate(date) {
       const options = { day: "numeric", month: "short", year: "numeric" };
       return new Date(date).toLocaleDateString("pl-PL", options);

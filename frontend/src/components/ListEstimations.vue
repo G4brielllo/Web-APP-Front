@@ -1,5 +1,8 @@
 <template>
   <v-app class="app-container">
+    <v-col cols="auto">
+      <NavigationDrawer />
+    </v-col>
     <v-container class="d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
@@ -40,9 +43,13 @@
 <script>
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
+import NavigationDrawer from "@/components/NavigationDrawer.vue";
 
 export default {
   name: "ListEstimation",
+  components: {
+    NavigationDrawer,
+  },
   data() {
     return {
       search: "",
@@ -58,8 +65,8 @@ export default {
       const baseHeaders = [
         { text: "L.p.", align: "start", sortable: false, value: "id" },
         { text: "Nazwa", value: "name" },
-        { text: "Projekt", value: "project_name" }, 
-        { text: "Klient", value: "client_name" }, 
+        { text: "Projekt", value: "project_name" },
+        { text: "Klient", value: "client_name" },
         { text: "Wycena", value: "type" },
         { text: "Kwota", value: "amount" },
         { text: "Data wykonania", value: "date" },
@@ -74,7 +81,6 @@ export default {
     this.fetchEstimations();
   },
   methods: {
-
     async fetchClients() {
       try {
         const response = await axios.get("clients");
@@ -101,21 +107,25 @@ export default {
         console.log("Pobrane wyceny:", response.data);
 
         this.estimations = response.data.map((estimation) => {
-          const client = this.clients.find(client => client.id === estimation.client_id);
-          const project = this.projects.find(project => project.id === estimation.project_id);
+          const client = this.clients.find(
+            (client) => client.id === estimation.client_id
+          );
+          const project = this.projects.find(
+            (project) => project.id === estimation.project_id
+          );
 
-          console.log("Znaleziony klient:", client); 
-          console.log("Znaleziony projekt:", project);  
+          console.log("Znaleziony klient:", client);
+          console.log("Znaleziony projekt:", project);
 
           return {
             id: estimation.id,
             name: estimation.name,
             type: estimation.type,
-            client_name: client ? client.name : "Brak klienta",  
+            client_name: client ? client.name : "Brak klienta",
             amount: estimation.amount,
             date: this.formatDate(estimation.date),
-            project_name: project ? project.name : "Brak projektu", 
-                 };
+            project_name: project ? project.name : "Brak projektu",
+          };
         });
       } catch (error) {
         console.error("Błąd podczas pobierania wycen:", error);
@@ -204,5 +214,4 @@ v-container {
   padding: 8px;
   text-align: center;
 }
-
 </style>
