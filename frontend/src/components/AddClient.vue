@@ -169,7 +169,7 @@ export default {
           if (response.status === 200 || response.status === 201) {
             console.log("Client saved successfully:", response.data);
             this.clearForm();
-            this.$router.push("/");
+            this.$router.push("/listClients");
           } else {
             console.error("Error saving client:", response.data);
           }

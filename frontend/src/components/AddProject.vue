@@ -116,7 +116,7 @@ export default {
           if (response.status === 201 || response.status === 200) {
             console.log("Project saved successfully:", response.data);
             this.clearForm();
-            this.$router.push("/");
+            this.$router.push("/listProjects");
           } else {
             console.error("Error saving project:", response.data);
           }
