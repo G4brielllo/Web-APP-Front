@@ -32,6 +32,26 @@
         </v-card-text>
         <v-row class="operation-buttons">
           <v-col cols="auto">
+            <template>
+              <v-menu open-on-hover>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="gray" v-bind="attrs" v-on="on">Opcje</v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="goToAddEstimation">
+                    <v-list-item-title>Dodaj Wycenę</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="goToAddClient">
+                    <v-list-item-title>Dodaj Klienta</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="goToAddProject">
+                    <v-list-item-title>Dodaj Projekt</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </template>
+          </v-col>
+          <v-col cols="auto">
             <v-btn @click="returnToHomePage">Wróć</v-btn>
           </v-col>
         </v-row>
