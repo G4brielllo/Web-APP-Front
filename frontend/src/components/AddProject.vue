@@ -79,7 +79,7 @@ export default {
     async fetchProjectDetails(projectId) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/projects/${projectId}`
+          `http://127.0.0.1:8000/api/projects/${projectId}`
         );
         const projectData = response.data;
 
@@ -97,14 +97,14 @@ export default {
         try {
           let response;
           if (this.isNewProject) {
-            response = await axios.post("http://127.0.0.1:8000/projects", {
+            response = await axios.post("http://127.0.0.1:8000/api/projects", {
               name: this.project.name,
               description: this.project.description,
               client_id: this.project.client,
             });
           } else {
             response = await axios.put(
-              `http://127.0.0.1:8000/projects/${this.project.id}`,
+              `http://127.0.0.1:8000/api/projects/${this.project.id}`,
               {
                 name: this.project.name,
                 description: this.project.description,
@@ -140,7 +140,7 @@ export default {
 
     async fetchClients() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/clients");
+        const response = await axios.get("http://127.0.0.1:8000/api/clients");
         this.clients = response.data;
       } catch (error) {
         console.error("Error fetching clients:", error);
