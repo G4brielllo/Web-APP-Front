@@ -91,8 +91,11 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray">Dodaj</v-btn> 
-          <v-btn color="gray">Anuluj</v-btn
+          <v-btn color="gray" @click="saveEstimation" small>{{
+            isNewEstimation ? "Dodaj" : "Zapisz"
+          }}</v-btn>
+          <v-btn color="gray" @click="cancelEstimationAdding" small
+            >Anuluj</v-btn
           >
         </v-card-actions>
       </v-card>
@@ -125,6 +128,7 @@ export default {
 
     if (this.$route.query.id) {
       this.isNewEstimation = false;
+      this.fetchEstimationDetails(this.$route.query.id);
     }
   },
   methods: {
@@ -135,6 +139,63 @@ export default {
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
+    },
+    async fetchEstimationDetails(estimationId) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/estimations/${estimationId}`
+        );
+        const estimationData = response.data;
+
+        this.estimation.name = estimationData.name;
+        this.estimation.description = estimationData.description;
+        this.estimation.project_id = estimationData.project_id;
+        this.estimation.date = estimationData.date;
+        this.estimation.type = estimationData.type;
+        this.estimation.amount = estimationData.amount;
+      } catch (error) {
+        console.error("Error fetching estimation details:", error);
+      }
+    },
+    async saveEstimation() {
+      if (this.$refs.form.validate()) {
+        try {
+          let response;
+          if (this.isNewEstimation) {
+            response = await axios.post(
+              "http://127.0.0.1:8000/estimations",
+              this.estimation
+            );
+          } else {
+            response = await axios.put(
+              `http://127.0.0.1:8000/estimations/${this.$route.query.id}`,
+              this.estimation
+            );
+          }
+
+          if (response.status === 201 || response.status === 200) {
+            console.log("Estimation saved successfully:", response.data);
+            this.clearForm();
+            this.$router.push("/listEstimations");
+          } else {
+            console.error("Error saving estimation:", response.data);
+          }
+        } catch (error) {
+          console.error("Error saving estimation:", error);
+        }
+      }
+    },
+    cancelEstimationAdding() {
+      this.clearForm();
+      this.$router.push("/");
+    },
+    clearForm() {
+      this.estimation.name = "";
+      this.estimation.description = "";
+      this.estimation.project_id = null;
+      this.estimation.date = new Date().toISOString().substr(0, 10);
+      this.estimation.type = "hourly";
+      this.estimation.amount = "";
     },
     onDatePickerInput(date) {
       this.estimation.date = date;
