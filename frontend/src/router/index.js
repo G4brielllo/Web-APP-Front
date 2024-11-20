@@ -7,6 +7,7 @@ import ListEstimations from "@/components/ListEstimations.vue";
 import AddClient from '@/components/AddClient.vue';
 import AddProject from '@/components/AddProject.vue';
 import AddEstimation from '@/components/AddEstimation.vue';
+import AuthLogin from '@/components/AuthLogin.vue';
 
 
 Vue.use(Router);
@@ -15,11 +16,12 @@ export default new Router({
   mode: "history",
   routes: [
     { path: "/", name: "HomePage", component: HomePage, },
-    { path: "/listClients", name: "ListClients", component: ListClients, },
-    { path: "/listProjects", name: "ListProjects", component: ListProjects, },
-    { path: "/listEstimations", name: "ListEstimations", component: ListEstimations, },
+    { path: "/listClients", component: ListClients, },
+    { path: "/listProjects", component: ListProjects, },
+    { path: "/listEstimations", component: ListEstimations, },
     { path: "/addClient", component: AddClient },
     { path: "/addProject", component: AddProject },
     { path: "/addEstimation", component: AddEstimation },
+    { path: '/login', component: AuthLogin },
   ],
 });
