@@ -8,6 +8,8 @@ import AddClient from '@/components/AddClient.vue';
 import AddProject from '@/components/AddProject.vue';
 import AddEstimation from '@/components/AddEstimation.vue';
 import AuthLogin from '@/components/AuthLogin.vue';
+import AuthRegister from "@/components/AuthRegister.vue";
+import ListUsers from "@/components/ListUsers.vue";
 
 
 Vue.use(Router);
@@ -23,5 +25,7 @@ export default new Router({
     { path: "/addProject", component: AddProject },
     { path: "/addEstimation", component: AddEstimation },
     { path: '/login', component: AuthLogin },
+    { path: '/register', component: AuthRegister },
+    { path: "/listUsers", component: ListUsers, },
   ],
 });
