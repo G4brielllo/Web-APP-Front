@@ -33,7 +33,12 @@
         <v-list-item-title @click="goToHomePage()">Home Page</v-list-item-title>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        :disabled="isCurrentRoute('/listClients')"
+        @mouseover="toggleListItemHover(true, 'clients')"
+        @mouseleave="toggleListItemHover(false, 'clients')"
+        :class="{ 'list-item-hover': listItemHovered === 'clients' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
         </v-list-item-icon>
@@ -42,7 +47,12 @@
         >
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        :disabled="isCurrentRoute('/listProjects')"
+        @mouseover="toggleListItemHover(true, 'projects')"
+        @mouseleave="toggleListItemHover(false, 'projects')"
+        :class="{ 'list-item-hover': listItemHovered === 'projects' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-folder</v-icon>
         </v-list-item-icon>
@@ -51,7 +61,12 @@
         >
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        :disabled="isCurrentRoute('/listEstimations')"
+        @mouseover="toggleListItemHover(true, 'estimations')"
+        @mouseleave="toggleListItemHover(false, 'estimations')"
+        :class="{ 'list-item-hover': listItemHovered === 'estimations' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-note</v-icon>
         </v-list-item-icon>
@@ -60,7 +75,12 @@
         >
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        :disabled="isCurrentRoute('/listUsers')"
+        @mouseover="toggleListItemHover(true, 'users')"
+        @mouseleave="toggleListItemHover(false, 'users')"
+        :class="{ 'list-item-hover': listItemHovered === 'users' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-account</v-icon>
         </v-list-item-icon>
@@ -69,14 +89,24 @@
         >
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        @click="editItem()"
+        @mouseover="toggleListItemHover(true, 'edit')"
+        @mouseleave="toggleListItemHover(false, 'edit')"
+        :class="{ 'list-item-hover': listItemHovered === 'edit' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-pencil</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Edit My Data</v-list-item-title>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        @click="logout()"
+        @mouseover="toggleListItemHover(true, 'logout')"
+        @mouseleave="toggleListItemHover(false, 'logout')"
+        :class="{ 'list-item-hover': listItemHovered === 'logout' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-logout</v-icon>
         </v-list-item-icon>
@@ -87,7 +117,9 @@
         <v-list-item-icon>
           <v-icon size="x-large">mdi-login</v-icon>
         </v-list-item-icon>
-        <v-list-item-title @click = "goToLogin()">Login/Register</v-list-item-title>
+        <v-list-item-title @click="goToLogin()"
+          >Login/Register</v-list-item-title
+        >
       </v-list-item>
 
       <v-list-item v-if="userId">
@@ -132,7 +164,6 @@ export default {
     goToLogin() {
       this.$router.push("/login");
     },
-   
 
     isCurrentRoute(route) {
       return this.$route.path === route;
