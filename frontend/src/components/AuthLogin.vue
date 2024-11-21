@@ -24,7 +24,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="login-actions">
-          <v-btn color="gray" @click="login">Zaloguj</v-btn>
+          <v-btn color="gray" @click="login()">Zaloguj</v-btn>
         </v-card-actions>
         <v-card-actions class="login-actions">
           <v-btn color="gray">Zarejestruj się</v-btn>
@@ -38,6 +38,17 @@
 </template>
 
 <script>
+import axios from "axios";
+import CryptoJS from "crypto-js";
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
+function encryptData(data) {
+  const ciphertext = CryptoJS.AES.encrypt(
+    JSON.stringify(data),
+    encryptionKey
+  ).toString();
+  return ciphertext;
+}
 export default {
   data() {
     return {
@@ -49,6 +60,46 @@ export default {
     };
   },
   methods: {
+    async login() {
+      if (this.$refs.form.validate()) {
+        try {
+          const formData = new FormData();
+          formData.append("email", this.user.email);
+          formData.append("password", this.user.password);
+
+          const response = await axios.post(
+            "http://127.0.0.1:8000/login",
+            formData
+          );
+
+          if (response.status === 200) {
+            const userInformation = {
+              id: response.data.id,
+              name: response.data.name,
+              email: response.data.email,
+              token: response.data.token,
+              role: response.data.role,
+              logo: response.data.logo,
+            };
+            localStorage.setItem("jwt_token", response.data.token);
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${response.data.token}`;
+            const userData = JSON.stringify(userInformation).toString();
+            localStorage.setItem(encryptionKey, encryptData(userData));
+            this.clearForm();
+            this.showErrorAlert = false;
+            this.$router.push("/");
+          } else {
+            console.error("Login failed:", response.data);
+            this.showErrorAlert = true;
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          this.showErrorAlert = true;
+        }
+      }
+    },
     cancelLogin() {
       this.clearForm();
       this.$router.push("/");
