@@ -52,7 +52,7 @@
                     v-model="image"
                     label="Logo"
                     accept="image/*"
-                    @change="createBase64Image"
+                    @change="createBase64Image()"
                     dense
                   ></v-file-input>
                   <div v-if="user.logo">
@@ -68,10 +68,10 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveUser">Zapisz</v-btn>
-          <v-btn color="gray" @click="cancelUserAdding">Anuluj</v-btn>
+          <v-btn color="gray" @click="saveUser()">Zapisz</v-btn>
+          <v-btn color="gray" @click="cancelUserAdding()">Anuluj</v-btn>
           <v-spacer></v-spacer>
-          <v-btn class="login-btn" color="gray" @click="login"
+          <v-btn class="login-btn" color="gray" @click="login()"
             >Zaloguj się</v-btn
           >
         </v-card-actions>
