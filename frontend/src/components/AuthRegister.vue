@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <v-container>
+      <v-alert v-if="showErrorAlert" type="error" dismissible>
+        Hasła nie są identyczne. Sprawdź je i spróbuj ponownie.
+      </v-alert>
       <v-card class="register-card">
         <v-toolbar color="black" dark>
           <v-toolbar-title>{{ "Rejestracja" }}</v-toolbar-title>
@@ -49,7 +52,7 @@
                     v-model="image"
                     label="Logo"
                     accept="image/*"
-                    @change="createBase64Image()"
+                    @change="createBase64Image"
                     dense
                   ></v-file-input>
                   <div v-if="user.logo">
@@ -65,10 +68,12 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray">Zapisz</v-btn>
-          <v-btn color="gray">Anuluj</v-btn>
+          <v-btn color="gray" @click="saveUser">Zapisz</v-btn>
+          <v-btn color="gray" @click="cancelUserAdding">Anuluj</v-btn>
           <v-spacer></v-spacer>
-          <v-btn class="login-btn" color="gray">Zaloguj się</v-btn>
+          <v-btn class="login-btn" color="gray" @click="login"
+            >Zaloguj się</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>
@@ -76,6 +81,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -89,9 +96,58 @@ export default {
       },
       valid: true,
       image: null,
+      base64: null,
+      showErrorAlert: false,
     };
   },
   methods: {
+    async saveUser() {
+      if (this.$refs.form.validate()) {
+        if (!this.validatePasswords()) {
+          this.showErrorAlert = true;
+          return;
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append("name", this.user.name);
+          formData.append("email", this.user.email);
+          formData.append("password", this.user.password);
+          formData.append("logo", this.user.logo);
+
+          console.log("FormData content:");
+          for (const pair of formData.entries()) {
+            console.log(pair[0] + ": " + pair[1]);
+          }
+
+          const response = await axios.post(
+            "http://127.0.0.1:8000/register",
+            formData
+          );
+
+          if (response.status === 200 || response.status === 201) {
+            console.log("User saved successfully:", response.data);
+            this.clearForm();
+            this.$router.push("/");
+          } else {
+            console.error("Error saving user:", response.data);
+          }
+        } catch (error) {
+          console.error("Error saving user:", error);
+        }
+      }
+    },
+    validatePasswords() {
+      if (this.user.password !== this.user.confirmPassword) {
+        this.showErrorAlert = true;
+        setTimeout(() => {
+          this.showErrorAlert = false;
+        }, 3000);
+        return false;
+      }
+      this.showErrorAlert = false;
+      return true;
+    },
     cancelUserAdding() {
       this.clearForm();
       this.$router.push("/");
@@ -106,6 +162,9 @@ export default {
       this.user.password = "";
       this.user.confirmPassword = "";
       this.user.logo = "";
+      this.base64 = null;
+      this.image = null;
+      this.showErrorAlert = false;
     },
     createBase64Image(file) {
       const reader = new FileReader();
@@ -152,6 +211,12 @@ export default {
 .v-textarea,
 .v-radio-group {
   margin-bottom: 4px;
+}
+
+.v-text-field,
+.v-select,
+.v-textarea,
+.v-radio-group {
   min-height: 40px;
 }
 
@@ -162,5 +227,11 @@ export default {
 
 .v-toolbar-title {
   font-size: 20px;
+}
+
+.v-alert {
+  max-width: fit-content;
+  margin: auto;
+  text-align: center;
 }
 </style>
