@@ -34,6 +34,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listClients')"
         @mouseover="toggleListItemHover(true, 'clients')"
         @mouseleave="toggleListItemHover(false, 'clients')"
@@ -48,6 +49,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listProjects')"
         @mouseover="toggleListItemHover(true, 'projects')"
         @mouseleave="toggleListItemHover(false, 'projects')"
@@ -62,6 +64,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         :disabled="isCurrentRoute('/listEstimations')"
         @mouseover="toggleListItemHover(true, 'estimations')"
         @mouseleave="toggleListItemHover(false, 'estimations')"
@@ -76,6 +79,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn() && isAdmin"
         :disabled="isCurrentRoute('/listUsers')"
         @mouseover="toggleListItemHover(true, 'users')"
         @mouseleave="toggleListItemHover(false, 'users')"
@@ -90,6 +94,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn() && !isAdmin"
         @click="editItem()"
         @mouseover="toggleListItemHover(true, 'edit')"
         @mouseleave="toggleListItemHover(false, 'edit')"
@@ -102,6 +107,7 @@
       </v-list-item>
 
       <v-list-item
+        v-if="isLoggedIn()"
         @click="logout()"
         @mouseover="toggleListItemHover(true, 'logout')"
         @mouseleave="toggleListItemHover(false, 'logout')"
@@ -113,7 +119,13 @@
         <v-list-item-title>Logout</v-list-item-title>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item
+        v-else
+        @click="goToLogin()"
+        @mouseover="toggleListItemHover(true, 'login')"
+        @mouseleave="toggleListItemHover(false, 'login')"
+        :class="{ 'list-item-hover': listItemHovered === 'login' }"
+      >
         <v-list-item-icon>
           <v-icon size="x-large">mdi-login</v-icon>
         </v-list-item-icon>
@@ -133,6 +145,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import woman from "@/assets/woman.png";
 
 export default {
@@ -149,6 +162,40 @@ export default {
     };
   },
   methods: {
+    isLoggedIn() {
+      const token = localStorage.getItem("jwt_token");
+      return !!token;
+    },
+    async logout() {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+        const response = await axios.post(
+          "http://127.0.0.1:8000/logout",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          console.log("Logout successful:", response.data);
+          localStorage.removeItem("jwt_token");
+          localStorage.removeItem("user_information");
+          localStorage.removeItem("V3ryS3cur3K3y#2024!");
+          localStorage.removeItem("alertShown");
+          this.$router.push("/login");
+        } else {
+          console.error("Logout failed:", response.data);
+        }
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    },
     goToHomePage() {
       this.$router.push("/");
     },
@@ -181,7 +228,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .image-woman {
   width: 50px;
