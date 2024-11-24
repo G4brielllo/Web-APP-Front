@@ -10,6 +10,9 @@ import AddEstimation from '@/components/AddEstimation.vue';
 import AuthLogin from '@/components/AuthLogin.vue';
 import AuthRegister from "@/components/AuthRegister.vue";
 import ListUsers from "@/components/ListUsers.vue";
+import AuthEditForAdmin from "@/components/AuthEditForAdmin.vue";
+import AuthEditForAdmin from "@/components/AuthEditForUser.vue";
+
 
 
 Vue.use(Router);
@@ -27,5 +30,7 @@ export default new Router({
     { path: '/login', component: AuthLogin },
     { path: '/register', component: AuthRegister },
     { path: "/listUsers", component: ListUsers, },
+    { path: "/editForAdmin", component: AuthEditForAdmin, },
+    { path: "/editForUser", component: AuthEditForUser, },
   ],
 });
