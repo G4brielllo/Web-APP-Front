@@ -11,7 +11,7 @@ import AuthLogin from '@/components/AuthLogin.vue';
 import AuthRegister from "@/components/AuthRegister.vue";
 import ListUsers from "@/components/ListUsers.vue";
 import AuthEditForAdmin from "@/components/AuthEditForAdmin.vue";
-import AuthEditForAdmin from "@/components/AuthEditForUser.vue";
+import AuthEditForUser from "@/components/AuthEditForUser.vue";
 
 
 
@@ -31,6 +31,6 @@ export default new Router({
     { path: '/register', component: AuthRegister },
     { path: "/listUsers", component: ListUsers, },
     { path: "/editForAdmin", component: AuthEditForAdmin, },
-    { path: "/editForUser", component: AuthEditForUser, },
+    { path: "/editUser", component: AuthEditForUser, },
   ],
 });

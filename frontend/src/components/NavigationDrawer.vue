@@ -210,6 +210,11 @@ export default {
     },
     goToLogin() {
       this.$router.push("/login");
+    },goToListUsers() {
+      this.$router.push("/listUsers");
+    },
+    editItem() {
+      this.$router.push("/editUser");
     },
 
     isCurrentRoute(route) {
