@@ -35,11 +35,23 @@
             :search="search"
             :item-key="'id'"
           >
+            <template v-slot:[`item.actions`]="{ item }">
+              <template v-if="isAdmin">
+                <v-btn color="gray" @click="editProject(item)" text
+                  >Edytuj</v-btn
+                >
+                <v-btn color="gray" @click="deleteProject(item)" text
+                  >Usuń</v-btn
+                >
+              </template>
+            </template>
           </v-data-table>
         </v-card-text>
 
         <v-card-actions class="d-flex justify-center">
-          <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
+          <template v-if="isAdmin">
+            <v-btn class="mx-2" color="gray" @click="addProject">Dodaj</v-btn>
+          </template>
           <v-btn class="mx-2" color="gray" @click="returnToHomePage"
             >Wróć</v-btn
           >
@@ -54,6 +66,10 @@ import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
 
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
 export default {
   name: "ListProjects",
   components: {
@@ -65,6 +81,7 @@ export default {
       search: "",
       headers: this.getHeaders(),
       clients: [],
+      isAdmin: false,
       estimations: [],
       projects: [],
     };
@@ -72,35 +89,79 @@ export default {
 
   methods: {
     getHeaders() {
-      return [
+      const baseHeaders = [
         { text: "L.p.", align: "start", value: "id" },
         { text: "Klient", value: "client_name" },
         { text: "Nazwa Projektu", value: "name" },
-        { text: "Szacunkowa Wartość", value: "total_estimation", sortable: false,
+        {
+          text: "Szacunkowa Wartość",
+          value: "total_estimation",
+          sortable: false,
         },
         { text: "Data dodania", value: "formatted_created_at" },
       ];
+
+      if (this.isAdmin) {
+        baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
+      }
+
+      return baseHeaders;
+    },
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userRole = userDataObject.role;
+          this.isAdmin = this.userRole === "admin";
+          this.headers = this.getHeaders();
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     },
     async fetchProjects() {
       try {
         const response = await axios.get("projects");
         this.projects = response.data.map((project) => {
-      
           const client = this.clients.find(
-            (client) => client.id === project.client_id  
+            (client) => client.id === project.client_id
           );
           const estimation = this.estimations.find(
             (estimate) => estimate.project_id === project.id
           );
-          
+
           return {
             id: project.id,
             name: project.name,
             client_id: project.client_id,
             client_name: client ? client.name : "Brak klienta",
-            total_estimation : estimation 
-            ? estimation.amount 
-            : "brak wyceny",
+            total_estimation: estimation ? estimation.amount : "brak wyceny",
             formatted_created_at: this.formatDate(project.created_at),
           };
         });
@@ -116,11 +177,11 @@ export default {
         console.error("Error fetching clients:", error);
       }
     },
-    async fetchEstimations(){
-      try{
+    async fetchEstimations() {
+      try {
         const response = await axios.get("estimations");
         this.estimations = response.data;
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching clients:", error);
       }
     },
@@ -138,10 +199,9 @@ export default {
   },
 
   async created() {
-    await this.fetchClients(); 
+    await this.fetchClients();
     await this.fetchEstimations();
-    await this.fetchProjects(); 
-  
+    await this.fetchProjects();
   },
 };
 </script>
