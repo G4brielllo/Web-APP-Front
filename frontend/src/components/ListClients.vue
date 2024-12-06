@@ -29,22 +29,30 @@
               ></v-img>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-              <template>
+              <template v-if="isAdmin">
                 <v-btn
                   color="gray"
                   @click="editItem(item)"
                   text
                   class="compact-btn"
-                  >
+                >
                   Edytuj
                 </v-btn>
-                
+                <v-btn
+                  color="gray"
+                  @click="deleteItem(item)"
+                  text
+                  class="compact-btn"
+                  >Usuń</v-btn
+                >
               </template>
-              </template>
+            </template>
           </v-data-table>
         </v-card-text>
         <v-card-actions class="d-flex justify-center">
-          <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
+          <template v-if="isAdmin">
+            <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
+          </template>
           <v-btn color="gray" @click="returnToHomePage" class="mx-2"
             >Wróć</v-btn
           >
@@ -58,6 +66,9 @@
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
 
 export default {
   name: "ListClients",
@@ -70,12 +81,50 @@ export default {
       search: "",
       headers: this.getHeaders(),
       userRole: null,
-      isAdmin: true,
+      isAdmin: false,
       clients: [],
       isHovered: false,
     };
   },
   methods: {
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userRole = userDataObject.role;
+          this.isAdmin = this.userRole === "admin";
+          this.headers = this.getHeaders();
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
     async fetchClients() {
       try {
         const response = await axios.get("clients");
@@ -103,9 +152,9 @@ export default {
         { text: "Data dodania", value: "formatted_created_at" },
       ];
 
-     
+      if (this.isAdmin) {
         baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
-  
+      }
 
       return baseHeaders;
     },
@@ -117,16 +166,24 @@ export default {
         },
       });
     },
+    async deleteItem(item) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/clients/${item.id}`);
+        this.fetchClients();
+      } catch (error) {
+        console.error("Error deleting client:", error);
+      }
+    },
     returnToHomePage() {
       this.$router.push("/");
     },
     addClient() {
       this.$router.push("/addClient");
     },
-   
   },
   created() {
     this.fetchClients();
+    this.fetchUserData();
   },
 };
 </script>
