@@ -28,11 +28,17 @@
             :search="search"
             class="compact-data-table"
           >
+            <template v-slot:[`item.actions`]="{ item }">
+              <template v-if="isAdmin">
+                <v-btn color="gray" @click="editItem(item)" text>Edytuj</v-btn>
+                <v-btn color="gray" @click="deleteItem(item)" text>Usuń</v-btn>
+              </template>
+            </template>
           </v-data-table>
         </v-card-text>
         <v-row class="operation-buttons">
           <v-col cols="auto">
-            <template>
+            <template v-if="isAdmin">
               <v-menu open-on-hover>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn color="gray" v-bind="attrs" v-on="on">Opcje</v-btn>
@@ -65,6 +71,10 @@ import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
 
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
+
 export default {
   name: "ListEstimation",
   components: {
@@ -91,7 +101,9 @@ export default {
         { text: "Kwota", value: "amount" },
         { text: "Data wykonania", value: "date" },
       ];
-
+      if (this.isAdmin) {
+        baseHeaders.push({ text: "Akcje", value: "actions", sortable: false });
+      }
       return baseHeaders;
     },
   },
@@ -149,6 +161,42 @@ export default {
         });
       } catch (error) {
         console.error("Błąd podczas pobierania wycen:", error);
+      }
+    },
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.isAdmin = userDataObject.role === "admin";
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     },
 
