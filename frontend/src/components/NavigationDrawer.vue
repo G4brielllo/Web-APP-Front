@@ -148,6 +148,9 @@
 import axios from "axios";
 import woman from "@/assets/woman.png";
 
+import CryptoJS from "crypto-js";
+
+const encryptionKey = "V3ryS3cur3K3y#2024!";
 export default {
   name: "NavigationDrawer",
   data() {
@@ -161,7 +164,50 @@ export default {
       userLogo: null,
     };
   },
+  created() {
+    this.fetchUserData();
+  },
   methods: {
+    async fetchUserData() {
+      try {
+        const encryptedData = localStorage.getItem(encryptionKey);
+
+        const bytes = CryptoJS.AES.decrypt(encryptedData, encryptionKey);
+        const user_information = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+        const token = localStorage.getItem("jwt_token");
+
+        if (user_information) {
+          const userDataObject = JSON.parse(user_information);
+          this.userRole = userDataObject.role;
+          this.isAdmin = this.userRole === "admin";
+          this.userLogo = userDataObject.logo;
+        } else {
+          console.error("User information not found in localStorage.");
+        }
+
+        if (!token) {
+          console.error("No token found. User is not logged in.");
+          return;
+        }
+
+        const response = await axios.get("http://127.0.0.1:8000/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          const loggedInUserData = response.data;
+          this.userId = loggedInUserData.id;
+        } else {
+          console.error("Failed to fetch user data:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    },
+
     isLoggedIn() {
       const token = localStorage.getItem("jwt_token");
       return !!token;
@@ -210,7 +256,8 @@ export default {
     },
     goToLogin() {
       this.$router.push("/login");
-    },goToListUsers() {
+    },
+    goToListUsers() {
       this.$router.push("/listUsers");
     },
     editItem() {
