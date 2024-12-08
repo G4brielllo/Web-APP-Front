@@ -118,7 +118,7 @@ export default {
         if (user_information) {
           const userDataObject = JSON.parse(user_information);
           this.userRole = userDataObject.role;
-          this.isAdmin = this.userRole === "admin";
+          this.isAdmin = this.userRole === "Admin";
           this.headers = this.getHeaders();
         } else {
           console.error("User information not found in localStorage.");
