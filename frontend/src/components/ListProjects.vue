@@ -65,7 +65,7 @@
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
-
+import woman from "@/assets/woman.png";
 import CryptoJS from "crypto-js";
 
 const encryptionKey = "V3ryS3cur3K3y#2024!";
@@ -79,14 +79,48 @@ export default {
   data() {
     return {
       search: "",
+      selectedClient: null,
+      selectedDate: null,
+      datePicker: false,
+      woman: woman,
+      isAdmin: false,
+      isHovered: false,
       headers: this.getHeaders(),
       clients: [],
-      isAdmin: false,
-      estimations: [],
       projects: [],
+      estimations: [],
     };
   },
+  computed: {
+    filteredProjects() {
+      let filtered = this.projects;
 
+      if (this.search) {
+        const lowerCaseSearch = this.search.toLowerCase();
+        filtered = filtered.filter(
+          (item) =>
+            item.name.toLowerCase().includes(lowerCaseSearch) ||
+            item.client_name.toLowerCase().includes(lowerCaseSearch)
+        );
+      }
+
+      if (this.selectedClient) {
+        filtered = filtered.filter(
+          (item) => item.client_id === this.selectedClient
+        );
+      }
+
+      if (this.selectedDate) {
+        const selectedDate = new Date(this.selectedDate);
+        filtered = filtered.filter((item) => {
+          const projectDate = new Date(item.created_at);
+          return projectDate.toDateString() === selectedDate.toDateString();
+        });
+      }
+
+      return filtered;
+    },
+  },
   methods: {
     getHeaders() {
       const baseHeaders = [
@@ -147,24 +181,16 @@ export default {
     },
     async fetchProjects() {
       try {
-        const response = await axios.get("projects");
-        this.projects = response.data.map((project) => {
-          const client = this.clients.find(
-            (client) => client.id === project.client_id
-          );
-          const estimation = this.estimations.find(
-            (estimate) => estimate.project_id === project.id
-          );
-
-          return {
-            id: project.id,
-            name: project.name,
-            client_id: project.client_id,
-            client_name: client ? client.name : "Brak klienta",
-            total_estimation: estimation ? estimation.amount : "brak wyceny",
-            formatted_created_at: this.formatDate(project.created_at),
-          };
-        });
+        const response = await axios.get("http://127.0.0.1:8000/projects");
+        this.projects = response.data.map((project) => ({
+          id: project.id,
+          name: project.name,
+          client_id: project.client_id,
+          client_name: project.client ? project.client.name : "Brak klienta",
+          total_estimation: this.calculateTotalEstimation(project.id),
+          formatted_created_at: this.formatDate(project.created_at),
+          created_at: project.created_at,
+        }));
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -181,12 +207,39 @@ export default {
       try {
         const response = await axios.get("estimations");
         this.estimations = response.data;
+        this.updateProjectEstimations();
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     },
     addProject() {
       this.$router.push("/addProject");
+    },
+    async deleteProject(item) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/projects/${item.id}`);
+        this.fetchProjects();
+      } catch (error) {
+        console.error("Error deleting project:", error);
+      }
+    },
+    editProject(project) {
+      this.$router.push({ path: "/addProject", query: { id: project.id } });
+    },
+    updateProjectEstimations() {
+      this.projects = this.projects.map((project) => ({
+        ...project,
+        total_estimation: this.calculateTotalEstimation(project.id),
+      }));
+    },
+    calculateTotalEstimation(projectId) {
+      const projectEstimations = this.estimations.filter(
+        (estimation) => estimation.project_id === projectId
+      );
+      return projectEstimations.reduce(
+        (sum, estimation) => sum + (parseFloat(estimation.amount) || 0),
+        0
+      );
     },
     formatDate(date) {
       const options = { day: "numeric", month: "short", year: "numeric" };
@@ -199,9 +252,10 @@ export default {
   },
 
   async created() {
-    await this.fetchClients();
-    await this.fetchEstimations();
     await this.fetchProjects();
+    await this.fetchEstimations();
+    await this.fetchClients();
+    this.fetchUserData();
   },
 };
 </script>
