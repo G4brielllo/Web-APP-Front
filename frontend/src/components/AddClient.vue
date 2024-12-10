@@ -141,43 +141,45 @@ export default {
     },
 
     async saveClient() {
-      if (this.$refs.form.validate()) {
-        try {
-          const formData = new FormData();
-          formData.append("name", this.client.name);
-          formData.append("email", this.client.email);
-          formData.append("description", this.client.description);
-          formData.append("country", this.client.country);
+  if (this.$refs.form.validate()) {
+    try {
+      const formdata = {
+        name: this.client.name,
+        email: this.client.email,
+        description: this.client.description,
+        country: this.client.country,
+      };
 
-          if (this.image) {
-            formData.append("logo", this.base64);
-          }
-
-          let response;
-          if (this.isNewClient) {
-            response = await axios.post(
-              "http://127.0.0.1:8000/clients",
-              formData
-            );
-          } else {
-            response = await axios.put(
-              `http://127.0.0.1:8000/clients/${this.client.id}`,
-              formData
-            );
-          }
-
-          if (response.status === 200 || response.status === 201) {
-            console.log("Client saved successfully:", response.data);
-            this.clearForm();
-            this.$router.push("/listClients");
-          } else {
-            console.error("Error saving client:", response.data);
-          }
-        } catch (error) {
-          console.error("Error saving client:", error);
-        }
+      if (this.image) {
+        formdata.logo = this.base64;
       }
-    },
+
+      let response;
+      if (this.isNewClient) {
+        response = await axios.post(
+          "http://127.0.0.1:8000/clients",
+          formdata
+        );
+      } else {
+        response = await axios.put(
+          `http://127.0.0.1:8000/clients/${this.client.id}`,
+          formdata
+        );
+      }
+
+      if (response.status === 200 || response.status === 201) {
+        console.log("Client saved successfully:", response.data);
+        this.clearForm();
+        this.$router.push("/listClients");
+      } else {
+        console.error("Error saving client:", response.data);
+      }
+    } catch (error) {
+      console.error("Error saving client:", error.response?.data || error);
+    }
+  }
+},
+
 
     cancelClientAdding() {
       this.clearForm();

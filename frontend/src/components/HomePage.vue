@@ -38,7 +38,8 @@
                       >
                         Zarządzaj Klientami
                       </v-btn>
-                      <v-img :src="user" class="image-item"></v-img>
+                    
+                      <v-img  @click="goToListClients" :src="user" class="image-item"></v-img>
                     </v-col>
                     <v-col cols="12" sm="4" class="flex-column-center">
                       <v-btn
@@ -49,7 +50,7 @@
                       >
                         Zarządzaj Projektami
                       </v-btn>
-                      <v-img :src="project" class="image-item"></v-img>
+                      <v-img  @click="goToListProjects" :src="project" class="image-item"></v-img>
                     </v-col>
                     <v-col cols="12" sm="4" class="flex-column-center">
                       <v-btn
@@ -60,7 +61,7 @@
                       >
                         Zarządzaj Estymacjami
                       </v-btn>
-                      <v-img :src="estimation" class="image-item"></v-img>
+                      <v-img      @click="goToListEstimations" :src="estimation" class="image-item"></v-img>
                     </v-col>
                   </v-card-actions>
                 </v-card>
