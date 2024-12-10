@@ -12,6 +12,7 @@ import AuthRegister from "@/components/AuthRegister.vue";
 import ListUsers from "@/components/ListUsers.vue";
 import AuthEditForAdmin from "@/components/AuthEditForAdmin.vue";
 import AuthEditForUser from "@/components/AuthEditForUser.vue";
+import AuthEmailToResetPassword from "@/components/AuthEmailToResetPassword.vue";
 
 
 
@@ -32,5 +33,6 @@ export default new Router({
     { path: "/listUsers", component: ListUsers, },
     { path: "/editForAdmin", component: AuthEditForAdmin, },
     { path: "/editUser", component: AuthEditForUser, },
+    { path: "/confirmEmail", component: AuthEmailToResetPassword, },
   ],
 });
