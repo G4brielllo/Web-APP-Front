@@ -197,19 +197,30 @@ export default {
     },
     async fetchClients() {
       try {
-        const response = await axios.get("clients");
-        this.clients = response.data;
+        const clientsWithProjects = this.projects.map((project) => ({
+          id: project.client_id,
+          name: project.client_name,
+        }));
+
+        const uniqueClients = clientsWithProjects.filter(
+          (client, index, self) =>
+            index === self.findIndex((c) => c.id === client.id)
+        );
+
+        this.clients = uniqueClients;
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     },
     async fetchEstimations() {
       try {
-        const response = await axios.get("estimations");
+        const response = await axios.get(
+          "http://127.0.0.1:8000/estimations"
+        );
         this.estimations = response.data;
         this.updateProjectEstimations();
       } catch (error) {
-        console.error("Error fetching clients:", error);
+        console.error("Error fetching estimations:", error);
       }
     },
     addProject() {

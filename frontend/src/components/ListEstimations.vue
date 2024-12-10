@@ -111,6 +111,7 @@ export default {
     this.fetchClients();
     this.fetchProjects();
     this.fetchEstimations();
+    this.fetchUserData();
   },
   methods: {
     async fetchClients() {
@@ -199,6 +200,16 @@ export default {
         console.error("Error fetching user data:", error);
       }
     },
+    async deleteItem(item) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/estimations/${item.id}`);
+        this.estimations = this.estimations.filter(
+          (estimation) => estimation.id !== item.id
+        );
+      } catch (error) {
+        console.error("Error deleting estimation:", error);
+      }
+    },
 
     returnToHomePage() {
       this.$router.push("/");
@@ -214,6 +225,12 @@ export default {
 
     goToAddProject() {
       this.$router.push("/addProject");
+    },
+    goToLogin() {
+      this.$router.push("/login");
+    },
+    toggleHover(value) {
+      this.isHovered = value;
     },
 
     editItem(item) {

@@ -16,9 +16,41 @@
             hide-details
             class="compact-search-field"
           ></v-text-field>
+          <v-menu
+            v-model="menu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="menuDate"
+                label="Wybierz datę"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                clearable
+                hide-details
+                class="compact-date-field"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="menuDate"
+              no-title
+              @input="menu = false"
+            ></v-date-picker>
+          </v-menu>
         </v-toolbar>
         <v-card-text>
-          <v-data-table :headers="headers" :items="clients" :search="search">
+          <v-data-table
+            :headers="headers"
+            :items="filteredClients"
+            :search="search"
+            class="compact-data-table"
+          >
             <template v-slot:[`item.logo`]="{ item }">
               <v-img
                 :src="item.logo"
@@ -35,9 +67,8 @@
                   @click="editItem(item)"
                   text
                   class="compact-btn"
+                  >Edytuj</v-btn
                 >
-                  Edytuj
-                </v-btn>
                 <v-btn
                   color="gray"
                   @click="deleteItem(item)"
@@ -65,6 +96,8 @@
 <script>
 import axios from "axios";
 axios.defaults.baseURL = "http://127.0.0.1:8000/";
+import woman from "@/assets/woman.png";
+
 import NavigationDrawer from "@/components/NavigationDrawer.vue";
 import CryptoJS from "crypto-js";
 
@@ -79,12 +112,34 @@ export default {
   data() {
     return {
       search: "",
-      headers: this.getHeaders(),
+      menu: false,
       userRole: null,
       isAdmin: false,
+      menuDate: null,
+      woman: woman,
+      headers: this.getHeaders(),
       clients: [],
       isHovered: false,
     };
+  },
+  computed: {
+    filteredClients() {
+      let filtered = this.clients;
+      if (this.search) {
+        const lowerCaseSearch = this.search.toLowerCase();
+        filtered = filtered.filter((client) =>
+          client.name.toLowerCase().includes(lowerCaseSearch)
+        );
+      }
+      if (this.menuDate) {
+        const selectedDate = new Date(this.menuDate);
+        filtered = filtered.filter((client) => {
+          const clientDate = new Date(client.created_at);
+          return this.compareDates(clientDate, selectedDate);
+        });
+      }
+      return filtered;
+    },
   },
   methods: {
     async fetchUserData() {
@@ -227,4 +282,4 @@ export default {
 .app-container {
   max-height: 100px;
 }
-</style>
+</style>v
