@@ -91,10 +91,10 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveEstimation()" small>{{
+          <v-btn color="gray" @click="saveEstimation" small>{{
             isNewEstimation ? "Dodaj" : "Zapisz"
           }}</v-btn>
-          <v-btn color="gray" @click="cancelEstimationAdding()" small
+          <v-btn color="gray" @click="cancelEstimationAdding" small
             >Anuluj</v-btn
           >
         </v-card-actions>
@@ -176,7 +176,7 @@ export default {
           if (response.status === 201 || response.status === 200) {
             console.log("Estimation saved successfully:", response.data);
             this.clearForm();
-            this.$router.push("/listEstimations");
+            this.$router.push("/");
           } else {
             console.error("Error saving estimation:", response.data);
           }

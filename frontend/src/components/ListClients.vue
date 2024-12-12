@@ -189,6 +189,7 @@ export default {
           logo: client.logo,
           country: client.country,
           formatted_created_at: this.formatDate(client.created_at),
+          created_at: client.created_at,
         }));
       } catch (error) {
         console.error("Error fetching clients:", error);
@@ -234,6 +235,13 @@ export default {
     },
     addClient() {
       this.$router.push("/addClient");
+    },
+    compareDates(date1, date2) {
+      return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+      );
     },
   },
   created() {
