@@ -140,12 +140,8 @@ export default {
         console.log("Pobrane wyceny:", response.data);
 
         this.estimations = response.data.map((estimation) => {
-          const client = this.clients.find(
-            (client) => client.id === estimation.client_id
-          );
-          const project = this.projects.find(
-            (project) => project.id === estimation.project_id
-          );
+      const project = this.projects.find(project => project.id === estimation.project_id) || {};
+      const client = this.clients.find(client => client.id === project.client_id) || {};
 
           console.log("Znaleziony klient:", client);
           console.log("Znaleziony projekt:", project);

@@ -180,38 +180,32 @@ export default {
       }
     },
     async fetchProjects() {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/projects");
-        this.projects = response.data.map((project) => ({
-          id: project.id,
-          name: project.name,
-          client_id: project.client_id,
-          client_name: project.client ? project.client.name : "Brak klienta",
-          total_estimation: this.calculateTotalEstimation(project.id),
-          formatted_created_at: this.formatDate(project.created_at),
-          created_at: project.created_at,
-        }));
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/projects");
+    this.projects = response.data.map((project) => {
+      const client = this.clients.find(client => client.id === project.client_id);
+      return {
+        id: project.id,
+        name: project.name,
+        client_id: project.client_id,
+        client_name: client ? client.name : "Brak klienta",
+        total_estimation: this.calculateTotalEstimation(project.id),
+        formatted_created_at: this.formatDate(project.created_at),
+        created_at: project.created_at,
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+  }
     },
     async fetchClients() {
-      try {
-        const clientsWithProjects = this.projects.map((project) => ({
-          id: project.client_id,
-          name: project.client_name,
-        }));
-
-        const uniqueClients = clientsWithProjects.filter(
-          (client, index, self) =>
-            index === self.findIndex((c) => c.id === client.id)
-        );
-
-        this.clients = uniqueClients;
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    },
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/clients");
+    this.clients = response.data;
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+  }
+},
     async fetchEstimations() {
       try {
         const response = await axios.get(
@@ -263,9 +257,10 @@ export default {
   },
 
   async created() {
+    await this.fetchClients();
     await this.fetchProjects();
     await this.fetchEstimations();
-    await this.fetchClients();
+  
     this.fetchUserData();
   },
 };
