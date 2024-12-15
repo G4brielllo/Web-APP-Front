@@ -52,7 +52,7 @@
                     v-model="image"
                     label="Logo"
                     accept="image/*"
-                    @change="createBase64Image()"
+                    @change="createBase64Image"
                     dense
                   ></v-file-input>
                   <div v-if="user.logo">
@@ -166,13 +166,14 @@ export default {
       this.image = null;
       this.showErrorAlert = false;
     },
-    createBase64Image(file) {
+    createBase64Image() {
+      if (!this.image) return; // Sprawdź, czy istnieje plik
       const reader = new FileReader();
       reader.onload = (event) => {
         this.base64 = event.target.result;
-        this.user.logo = this.base64;
+        this.user.logo = this.base64; // Przypisanie base64 do logo
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.image); // Odczyt pliku jako base64
     },
   },
 };
