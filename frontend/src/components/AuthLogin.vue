@@ -6,36 +6,40 @@
       </v-alert>
 
       <v-card class="login-card">
-        <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ "Logowanie" }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-        </v-toolbar>
+      <v-toolbar color="black" dark>
+          <p class="toolbar-title">Logowanie</p>
+        <v-spacer></v-spacer>
+      </v-toolbar>
         <v-card-text>
           <v-form ref="form" v-model="valid">
             <v-text-field
               v-model="user.email"
               label="Email"
+              outlined
               dense
               required
             ></v-text-field>
             <v-text-field
               v-model="user.password"
               label="Hasło"
+              outlined
               dense
               required
               type="password"
             ></v-text-field>
           </v-form>
+          <p class="login-actions-forgot-password" @click="forgotPassword()">
+            Zapomniałem hasła
+          </p>
         </v-card-text>
-        <v-card-actions class="login-actions">
-          <v-btn color="gray" @click="login()">Zaloguj</v-btn>
-        </v-card-actions>
-        <v-card-actions class="login-actions">
-          <v-btn color="gray" @click="register()">Zarejestruj się</v-btn>
-        </v-card-actions>
-        <v-card-actions class="login-actions-forgot-password">
-          <v-btn color="gray" @click="forgotPassword()">Zapomniałem hasła</v-btn>
-        </v-card-actions>
+
+        <v-btn class="login-actions" color="gray" @click="login()"
+          >Zaloguj</v-btn
+        >
+
+        <v-btn class="login-actions" color="gray" @click="register()"
+          >Zarejestruj się</v-btn
+        >
       </v-card>
     </v-container>
   </v-app>
@@ -134,13 +138,21 @@ export default {
 }
 
 .login-actions {
+  margin-bottom: 4%;
+  width: 80%;
+  margin-left: 10%;
   display: flex;
   justify-content: center;
   padding: 8px;
 }
 .login-actions-forgot-password {
+  margin-left: 60%;
+  color: blue;
   display: flex;
   justify-content: center;
+}
+.login-actions-forgot-password:hover {
+  text-decoration: underline;
 }
 
 .v-btn {
@@ -150,6 +162,16 @@ export default {
 
 .v-toolbar-title {
   font-size: 20px;
+}
+.toolbar-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px; 
+  margin-bottom: 16px; 
 }
 
 .v-alert {

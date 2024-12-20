@@ -6,7 +6,7 @@
       </v-alert>
       <v-card class="register-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{ "Rejestracja" }}</v-toolbar-title>
+          <p class="toolbar-title">Rejestracja</p>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -16,6 +16,7 @@
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="user.name"
+                    outlined
                     label="Nazwa"
                     dense
                     required
@@ -25,6 +26,7 @@
                   <v-text-field
                     v-model="user.email"
                     label="Email"
+                    outlined
                     dense
                     required
                   ></v-text-field>
@@ -33,6 +35,7 @@
                   <v-text-field
                     v-model="user.password"
                     label="Hasło"
+                    outlined
                     dense
                     required
                     type="password"
@@ -42,6 +45,7 @@
                   <v-text-field
                     v-model="user.confirmPassword"
                     label="Potwierdź Hasło"
+                    outlined
                     dense
                     required
                     type="password"
@@ -50,6 +54,7 @@
                 <v-col cols="12" sm="6">
                   <v-file-input
                     v-model="image"
+                    outlined
                     label="Logo"
                     accept="image/*"
                     @change="createBase64Image"
@@ -67,13 +72,9 @@
             </v-container>
           </v-form>
         </v-card-text>
-        <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveUser()">Zapisz</v-btn>
-          <v-btn color="gray" @click="cancelUserAdding()">Anuluj</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn class="login-btn" color="gray" @click="login()"
-            >Zaloguj się</v-btn
-          >
+        <v-card-actions class="action-buttons">
+         <v-btn  @click="saveUser()">Utwórz Konto</v-btn>
+         <v-btn  @click="cancelUserAdding()">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -150,10 +151,10 @@ export default {
     },
     cancelUserAdding() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/login");
     },
     login() {
-      this.$router.push("/login");
+      
     },
     clearForm() {
       this.user.id = null;
@@ -167,13 +168,13 @@ export default {
       this.showErrorAlert = false;
     },
     createBase64Image() {
-      if (!this.image) return; // Sprawdź, czy istnieje plik
+      if (!this.image) return; 
       const reader = new FileReader();
       reader.onload = (event) => {
         this.base64 = event.target.result;
-        this.user.logo = this.base64; // Przypisanie base64 do logo
+        this.user.logo = this.base64; 
       };
-      reader.readAsDataURL(this.image); // Odczyt pliku jako base64
+      reader.readAsDataURL(this.image); 
     },
   },
 };
@@ -213,6 +214,13 @@ export default {
 .v-radio-group {
   margin-bottom: 4px;
 }
+.action-buttons {
+  display: flex;
+  flex-direction: column; 
+  gap: 10px;  
+  align-items: center;  
+  margin-top: 4%; 
+}
 
 .v-text-field,
 .v-select,
@@ -220,14 +228,25 @@ export default {
 .v-radio-group {
   min-height: 40px;
 }
-
 .v-btn {
-  min-width: 80px;
-  padding: 4px 8px;
+  width: 80%;  
+  min-width: 120px;
+  padding: 4px 8px; 
+}
+.v-btn:hover {
+  color: #1976D2;
+  transform: scale(1.05);
 }
 
-.v-toolbar-title {
-  font-size: 20px;
+.toolbar-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px; 
+  margin-bottom: 16px; 
 }
 
 .v-alert {
