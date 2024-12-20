@@ -36,7 +36,7 @@
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn
                 color="gray"
-                @click="editItem(item)"
+                @click="editUser(item)"
                 text
                 class="compact-btn"
                 outlined
@@ -44,7 +44,7 @@
               >
               <v-btn
                 color="gray"
-                @click="deleteItem(item)"
+                @click="deleteUser(item)"
                 text
                 outlined
                 class="compact-btn"
