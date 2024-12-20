@@ -1,21 +1,24 @@
 <template>
   <v-app>
     <v-container>
-      <v-card class="elevation-4">
+      <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{
+          <p class="toolbar-title">{{
             isNewProject ? "Dodaj Projekt" : "Edytuj Projekt"
-          }}</v-toolbar-title>
+          }}</p>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
           <v-form ref="form" v-model="valid">
             <v-container>
               <v-row>
-                <v-col cols="12" sm="6">
+                <v-col cols="12">
                   <v-text-field
                     v-model="project.name"
                     label="Nazwa"
+                    rows="3"
+                    outlined
+                    dense
                     required
                   ></v-text-field>
                 </v-col>
@@ -23,6 +26,8 @@
                   <v-textarea
                     v-model="project.description"
                     label="Opis"
+                    outlined
+                    dense
                     rows="3"
                   ></v-textarea>
                 </v-col>
@@ -30,6 +35,9 @@
                   <v-select
                     v-model="project.client"
                     :items="clients"
+                    :menu-props="{ offsetY: true }"
+                    outlined
+                    dense
                     item-text="name"
                     item-value="id"
                     label="Klient"
@@ -40,9 +48,9 @@
             </v-container>
           </v-form>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="justify-center">
           <v-btn color="gray" @click="saveProject">{{
-            isNewProject ? "Dodaj" : "Zapisz zmiany"
+            isNewProject ? "Dodaj" : "Zapisz"
           }}</v-btn>
           <v-btn color="gray" @click="cancelProjectAdding">Anuluj</v-btn>
         </v-card-actions>
@@ -128,7 +136,7 @@ export default {
 
     cancelProjectAdding() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/listProjects");
     },
 
     clearForm() {
@@ -150,4 +158,28 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.toolbar-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.compact-card {
+  max-height: 100%;
+  max-width: 600px;
+  border-radius: 12px;
+  margin: auto;
+  padding: 16px;
+}
+.v-btn {
+  min-width: 120px;
+  padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;
+}
+</style>

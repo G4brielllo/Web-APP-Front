@@ -6,27 +6,24 @@
     <v-container class="fill-height justify-center">
       <v-card class="expanded-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>Lista Projektów</v-toolbar-title>
+          <p class="toolbar-title">Lista Projektów</p>
           <v-spacer></v-spacer>
-          <v-row>
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Wyszukaj"
-                single-line
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="4">
-              <v-autocomplete
-                :items="clients"
-                item-text="name"
-                item-value="id"
-                label="Wybierz klienta"
-              ></v-autocomplete>
-            </v-col>
-            <v-col cols="12" sm="6" md="4"> </v-col>
-          </v-row>
+
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Wyszukaj"
+            single-line
+            class="compact-search-field"
+          ></v-text-field>
+
+          <v-autocomplete
+            :items="clients"
+            item-text="name"
+            item-value="id"
+            label="Wybierz klienta"
+            class="compact-autocomplete"
+          ></v-autocomplete>
         </v-toolbar>
         <v-card-text>
           <v-data-table
@@ -37,11 +34,21 @@
           >
             <template v-slot:[`item.actions`]="{ item }">
               <template v-if="isAdmin">
-                <v-btn color="gray" @click="editProject(item)" text
-                  >Edytuj</v-btn
+                <v-btn
+                  color="gray"
+                  @click="editItem(item)"
+                  text
+                  class="compact-btn"
+                  outlined
+                  ><v-icon>mdi-pencil</v-icon></v-btn
                 >
-                <v-btn color="gray" @click="deleteProject(item)" text
-                  >Usuń</v-btn
+                <v-btn
+                  color="gray"
+                  @click="deleteItem(item)"
+                  text
+                  outlined
+                  class="compact-btn"
+                  ><v-icon>mdi-delete</v-icon></v-btn
                 >
               </template>
             </template>
@@ -180,37 +187,37 @@ export default {
       }
     },
     async fetchProjects() {
-  try {
-    const response = await axios.get("http://127.0.0.1:8000/projects");
-    this.projects = response.data.map((project) => {
-      const client = this.clients.find(client => client.id === project.client_id);
-      return {
-        id: project.id,
-        name: project.name,
-        client_id: project.client_id,
-        client_name: client ? client.name : "Brak klienta",
-        total_estimation: this.calculateTotalEstimation(project.id),
-        formatted_created_at: this.formatDate(project.created_at),
-        created_at: project.created_at,
-      };
-    });
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-  }
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/projects");
+        this.projects = response.data.map((project) => {
+          const client = this.clients.find(
+            (client) => client.id === project.client_id
+          );
+          return {
+            id: project.id,
+            name: project.name,
+            client_id: project.client_id,
+            client_name: client ? client.name : "Brak klienta",
+            total_estimation: this.calculateTotalEstimation(project.id),
+            formatted_created_at: this.formatDate(project.created_at),
+            created_at: project.created_at,
+          };
+        });
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
     },
     async fetchClients() {
-  try {
-    const response = await axios.get("http://127.0.0.1:8000/clients");
-    this.clients = response.data;
-  } catch (error) {
-    console.error("Error fetching clients:", error);
-  }
-},
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/clients");
+        this.clients = response.data;
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    },
     async fetchEstimations() {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/estimations"
-        );
+        const response = await axios.get("http://127.0.0.1:8000/estimations");
         this.estimations = response.data;
         this.updateProjectEstimations();
       } catch (error) {
@@ -220,7 +227,7 @@ export default {
     addProject() {
       this.$router.push("/addProject");
     },
-    async deleteProject(item) {
+    async deleteItem(item) {
       try {
         await axios.delete(`http://127.0.0.1:8000/projects/${item.id}`);
         this.fetchProjects();
@@ -228,7 +235,7 @@ export default {
         console.error("Error deleting project:", error);
       }
     },
-    editProject(project) {
+    editItem(project) {
       this.$router.push({ path: "/addProject", query: { id: project.id } });
     },
     updateProjectEstimations() {
@@ -260,7 +267,7 @@ export default {
     await this.fetchClients();
     await this.fetchProjects();
     await this.fetchEstimations();
-  
+
     this.fetchUserData();
   },
 };
@@ -269,16 +276,40 @@ export default {
 <style scoped>
 .expanded-card {
   background-color: #f8f9fa;
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
   padding: 16px;
   margin-bottom: 90%;
   width: 82%;
   max-width: 1200px;
 }
+.v-btn {
+  min-width: 120px;
+  padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;
+}
+.compact-btn {
+  margin-bottom: 1%;
+  margin-top: 2%;
+  border-width: 20px;
+}
 
-body {
-  overflow: hidden;
+.compact-search-field,
+.compact-autocomplete {
+  margin-left: 5%;
+  max-width: 200px;
+}
+.v-toolbar{
+  padding-top: 10px;
+}
+.toolbar-title {
+  width: 30%;
+  display: flex;
+  font-size: 25px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .rounded-image {

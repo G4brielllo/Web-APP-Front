@@ -6,19 +6,17 @@
     <v-container class="d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>Lista Wycen</v-toolbar-title>
+          <p class="toolbar-title">Lista Wycen</p>
           <v-spacer></v-spacer>
           <v-row align="center">
-            <v-col cols="12" sm="6" md="4">
-              <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Wyszukaj"
-                single-line
-                hide-details
-                class="compact-search-field"
-              ></v-text-field>
-            </v-col>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Wyszukaj"
+              single-line
+              hide-details
+              class="compact-search-field"
+            ></v-text-field>
           </v-row>
         </v-toolbar>
         <v-card-text>
@@ -30,8 +28,23 @@
           >
             <template v-slot:[`item.actions`]="{ item }">
               <template v-if="isAdmin">
-                <v-btn color="gray" @click="editItem(item)" text>Edytuj</v-btn>
-                <v-btn color="gray" @click="deleteItem(item)" text>Usuń</v-btn>
+                <v-btn
+                :menu-props="{ offsetY: true }"
+                  color="gray"
+                  @click="editItem(item)"
+                  text
+                  class="compact-btn"
+                  outlined
+                  ><v-icon>mdi-pencil</v-icon></v-btn
+                >
+                <v-btn
+                  color="gray"
+                  @click="deleteItem(item)"
+                  text
+                  outlined
+                  class="compact-btn"
+                  ><v-icon>mdi-delete</v-icon></v-btn
+                >
               </template>
             </template>
           </v-data-table>
@@ -140,8 +153,13 @@ export default {
         console.log("Pobrane wyceny:", response.data);
 
         this.estimations = response.data.map((estimation) => {
-      const project = this.projects.find(project => project.id === estimation.project_id) || {};
-      const client = this.clients.find(client => client.id === project.client_id) || {};
+          const project =
+            this.projects.find(
+              (project) => project.id === estimation.project_id
+            ) || {};
+          const client =
+            this.clients.find((client) => client.id === project.client_id) ||
+            {};
 
           console.log("Znaleziony klient:", client);
           console.log("Znaleziony projekt:", project);
@@ -244,11 +262,19 @@ export default {
 <style scoped>
 @import "~@mdi/font/css/materialdesignicons.css";
 
-v-col,
-v-container {
-  flex-direction: column;
+.toolbar-title {
+  width: 30%;
+  display: flex;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
-
+.compact-btn {
+  margin-bottom: 1%;
+  margin-top: 2%;
+  border-width: 20px;
+}
 .compact-card {
   background-color: #f8f9fa;
   border-radius: 12px;
@@ -260,9 +286,16 @@ v-container {
   overflow-y: auto;
   max-height: calc(100vh - 100px);
 }
-
+.v-btn {
+  min-width: 120px;
+  padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;  
+}
 .compact-search-field {
-  width: 300px;
+  width: 100px;
+  margin-right: 10px;
 }
 
 .compact-data-table {

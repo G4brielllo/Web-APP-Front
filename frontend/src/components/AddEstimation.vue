@@ -3,9 +3,9 @@
     <v-container>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{
-            isNewEstimation ? "Dodaj wycenę" : "Edytuj wycenę"
-          }}</v-toolbar-title>
+          <p class="toolbar-title">
+            {{ isNewEstimation ? "Dodaj wycenę" : "Edytuj wycenę" }}
+          </p>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
@@ -16,28 +16,32 @@
                   <v-text-field
                     v-model="estimation.name"
                     label="Nazwa"
+                    outlined
                     dense
                     required
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="estimation.description"
-                    label="Opis"
-                    rows="2"
-                    dense
-                  ></v-textarea>
-                </v-col>
                 <v-col cols="12" sm="6">
                   <v-select
                     v-model="estimation.project_id"
+                    :menu-props="{ offsetY: true }"
                     :items="projects"
+                    outlined
                     label="Projekt"
                     item-text="name"
                     item-value="id"
                     dense
                     required
                   ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-textarea
+                    v-model="estimation.description"
+                    label="Opis"
+                    outlined
+                    rows="2"
+                    dense
+                  ></v-textarea>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-menu
@@ -54,6 +58,7 @@
                         label="Data"
                         prepend-icon="mdi-calendar"
                         readonly
+                        outlined
                         v-bind="attrs"
                         v-on="on"
                         clearable
@@ -64,11 +69,21 @@
                     <v-date-picker
                       v-model="estimation.date"
                       no-title
+                      outlined
                       @input="onDatePickerInput"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
-                <v-col cols="12">
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="estimation.amount"
+                    label="Wycena"
+                    outlined
+                    dense
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
                   <v-radio-group
                     v-model="estimation.type"
                     label="Rodzaj wyceny"
@@ -78,23 +93,15 @@
                     <v-radio value="fixed" label="Fixed Price"></v-radio>
                   </v-radio-group>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-model="estimation.amount"
-                    label="Wycena"
-                    dense
-                    required
-                  ></v-text-field>
-                </v-col>
               </v-row>
             </v-container>
           </v-form>
         </v-card-text>
-        <v-card-actions class="compact-actions">
-          <v-btn color="gray" @click="saveEstimation" small>{{
+        <v-card-actions class="justify-center">
+          <v-btn color="gray" @click="saveEstimation">{{
             isNewEstimation ? "Dodaj" : "Zapisz"
           }}</v-btn>
-          <v-btn color="gray" @click="cancelEstimationAdding" small
+          <v-btn color="gray" @click="cancelEstimationAdding"
             >Anuluj</v-btn
           >
         </v-card-actions>
@@ -206,54 +213,37 @@ export default {
 </script>
 
 <style scoped>
+.toolbar-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
 .compact-card {
   max-height: 100%;
-  max-width: 80%;
+  max-width: 600px;
   border-radius: 12px;
   margin: auto;
   padding: 16px;
 }
 
-.compact-form {
-  padding: 0;
-}
-
-.compact-actions {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px;
-}
 
 .v-card-title {
   font-size: 18px;
   padding: 8px 0;
 }
-
-.v-text-field,
-.v-select,
-.v-textarea,
-.v-radio-group {
-  margin-bottom: 4px;
-}
-
-.v-text-field,
-.v-select,
-.v-textarea,
-.v-radio-group {
-  min-height: 40px;
-}
-
 .v-btn {
-  min-width: 80px;
+  min-width: 120px;
   padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;
 }
-
-.v-toolbar-title {
-  font-size: 20px;
-}
-
 .v-date-picker {
-  width: auto !important;
-  max-width: 290px !important;
+  width: auto;
+  max-width: 290px;
 }
 </style>

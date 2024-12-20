@@ -3,10 +3,10 @@
     <v-col cols="auto">
       <NavigationDrawer />
     </v-col>
-    <v-container class="fill-height d-flex align-center justify-center">
+    <v-container class="fill-height align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
-          <p class="toolbar-title">Lista klientów</p>
+          <p class="toolbar-title">Lista Klientów</p>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -57,7 +57,6 @@
             :headers="headers"
             :items="filteredClients"
             :search="search"
-           
           >
             <template v-slot:[`item.logo`]="{ item }">
               <v-img
@@ -88,11 +87,11 @@
             </template>
           </v-data-table>
         </v-card-text>
-        <v-card-actions class="d-flex justify-center">
+        <v-card-actions class="justify-center">
           <template v-if="isAdmin">
-            <v-btn color="gray" @click="addClient" class="mx-2">Dodaj</v-btn>
+            <v-btn color="gray" @click="addClient">Dodaj</v-btn>
           </template>
-          <v-btn color="gray" @click="returnToHomePage" class="mx-2"
+          <v-btn color="gray" @click="returnToHomePage"
             >Wróć</v-btn
           >
         </v-card-actions>
@@ -263,7 +262,6 @@ export default {
 </script>
 
 <style scoped>
-@import "~@mdi/font/css/materialdesignicons.css";
 
 .fill-height {
   height: 100vh;
@@ -276,16 +274,8 @@ export default {
   margin-top: 16px;
   margin-bottom: 16px;
 }
-.d-flex {
-  display: flex;
-}
-
 .align-center {
   align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
 }
 .v-btn {
   min-width: 120px;

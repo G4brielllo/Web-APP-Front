@@ -3,19 +3,20 @@
     <v-container>
       <v-card class="elevation-4 compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>{{
-            isNewClient ? "Dodaj klienta" : "Edytuj klienta"
-          }}</v-toolbar-title>
+          <p class="toolbar-title">
+            {{ isNewClient ? "Dodaj klienta" : "Edytuj klienta" }}
+          </p>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
-          <v-form ref="form" v-model="valid" class="compact-form">
+          <v-form ref="form" v-model="valid">
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="client.name"
                     label="Nazwa"
+                    outlined
                     dense
                     required
                   ></v-text-field>
@@ -23,6 +24,7 @@
                 <v-col cols="12" sm="6">
                   <v-text-field
                     v-model="client.email"
+                    outlined
                     label="Email"
                     dense
                     required
@@ -31,6 +33,7 @@
                 <v-col cols="12">
                   <v-textarea
                     v-model="client.description"
+                    outlined
                     label="Opis"
                     rows="3"
                     dense
@@ -40,6 +43,7 @@
                 <v-col cols="12" sm="6">
                   <v-file-input
                     v-model="image"
+                    outlined
                     label="Logo"
                     accept="image/*"
                     @change="createBase64Image"
@@ -56,6 +60,8 @@
                 <v-col cols="12" sm="6">
                   <v-select
                     v-model="client.country"
+                    :menu-props="{ offsetY: true }"
+                    outlined
                     :items="countries"
                     label="Kraj"
                     dense
@@ -66,9 +72,9 @@
             </v-container>
           </v-form>
         </v-card-text>
-        <v-card-actions class="compact-actions">
+        <v-card-actions class="justify-center">
           <v-btn color="gray" @click="saveClient" :disabled="!valid">{{
-            isNewClient ? "Dodaj" : "Zapisz zmiany"
+            isNewClient ? "Dodaj" : "Zapisz"
           }}</v-btn>
           <v-btn color="gray" @click="cancelClientAdding">Anuluj</v-btn>
         </v-card-actions>
@@ -141,49 +147,48 @@ export default {
     },
 
     async saveClient() {
-  if (this.$refs.form.validate()) {
-    try {
-      const formdata = {
-        name: this.client.name,
-        email: this.client.email,
-        description: this.client.description,
-        country: this.client.country,
-      };
+      if (this.$refs.form.validate()) {
+        try {
+          const formdata = {
+            name: this.client.name,
+            email: this.client.email,
+            description: this.client.description,
+            country: this.client.country,
+          };
 
-      if (this.image) {
-        formdata.logo = this.base64;
+          if (this.image) {
+            formdata.logo = this.base64;
+          }
+
+          let response;
+          if (this.isNewClient) {
+            response = await axios.post(
+              "http://127.0.0.1:8000/clients",
+              formdata
+            );
+          } else {
+            response = await axios.put(
+              `http://127.0.0.1:8000/clients/${this.client.id}`,
+              formdata
+            );
+          }
+
+          if (response.status === 200 || response.status === 201) {
+            console.log("Client saved successfully:", response.data);
+            this.clearForm();
+            this.$router.push("/listClients");
+          } else {
+            console.error("Error saving client:", response.data);
+          }
+        } catch (error) {
+          console.error("Error saving client:", error.response?.data || error);
+        }
       }
-
-      let response;
-      if (this.isNewClient) {
-        response = await axios.post(
-          "http://127.0.0.1:8000/clients",
-          formdata
-        );
-      } else {
-        response = await axios.put(
-          `http://127.0.0.1:8000/clients/${this.client.id}`,
-          formdata
-        );
-      }
-
-      if (response.status === 200 || response.status === 201) {
-        console.log("Client saved successfully:", response.data);
-        this.clearForm();
-        this.$router.push("/listClients");
-      } else {
-        console.error("Error saving client:", response.data);
-      }
-    } catch (error) {
-      console.error("Error saving client:", error.response?.data || error);
-    }
-  }
-},
-
+    },
 
     cancelClientAdding() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/listClients");
     },
 
     clearForm() {
@@ -216,47 +221,32 @@ export default {
 <style scoped>
 .compact-card {
   max-height: 100%;
-  max-width: 80%;
+  max-width: 600px;
   border-radius: 12px;
   margin: auto;
   padding: 16px;
 }
-
-.compact-form {
-  padding: 0;
-}
-
-.compact-actions {
+.v-card-actions{
+  justify-content: center;
   display: flex;
-  justify-content: space-between;
-  padding: 8px;
 }
 
-.v-card-title {
-  font-size: 18px;
-  padding: 8px 0;
-}
-
-.v-text-field,
-.v-select,
-.v-textarea,
-.v-radio-group {
-  margin-bottom: 4px;
-}
-
-.v-text-field,
-.v-select,
-.v-textarea,
-.v-radio-group {
-  min-height: 40px;
-}
 
 .v-btn {
-  min-width: 80px;
+  min-width: 120px;
   padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;
 }
 
-.v-toolbar-title {
-  font-size: 20px;
+.toolbar-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 </style>
