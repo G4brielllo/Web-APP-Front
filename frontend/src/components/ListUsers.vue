@@ -6,7 +6,7 @@
     <v-container class="fill-height d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
-          <p class="toolbar-title">Lista klientów</p>
+          <p class="toolbar-title">Lista Użytkowników</p>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -191,6 +191,8 @@ export default {
 }
 
 .compact-btn {
-  min-width: 64px;
+  margin-bottom: 10%;
+  margin-top: 10%;
+  border-width: 20px;
 }
 </style>

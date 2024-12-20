@@ -271,8 +271,8 @@ export default {
   margin-bottom: 16px;
 }
 .compact-btn {
-  margin-bottom: 1%;
-  margin-top: 2%;
+  margin-bottom: 10%;
+  margin-top: 10%;
   border-width: 20px;
 }
 .compact-card {
