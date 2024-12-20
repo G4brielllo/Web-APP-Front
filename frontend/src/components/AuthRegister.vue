@@ -73,8 +73,8 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="action-buttons">
-         <v-btn  @click="saveUser()">Utwórz Konto</v-btn>
-         <v-btn  @click="cancelUserAdding()">Anuluj</v-btn>
+          <v-btn @click="saveUser()">Utwórz Konto</v-btn>
+          <v-btn @click="cancelUserAdding()">Anuluj</v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
@@ -153,9 +153,7 @@ export default {
       this.clearForm();
       this.$router.push("/login");
     },
-    login() {
-      
-    },
+    login() {},
     clearForm() {
       this.user.id = null;
       this.user.name = "";
@@ -168,13 +166,13 @@ export default {
       this.showErrorAlert = false;
     },
     createBase64Image() {
-      if (!this.image) return; 
+      if (!this.image) return;
       const reader = new FileReader();
       reader.onload = (event) => {
         this.base64 = event.target.result;
-        this.user.logo = this.base64; 
+        this.user.logo = this.base64;
       };
-      reader.readAsDataURL(this.image); 
+      reader.readAsDataURL(this.image);
     },
   },
 };
@@ -182,8 +180,7 @@ export default {
 
 <style scoped>
 .register-card {
-  width: 100%;
-  max-width: 80%;
+  max-width: 600px;
   border-radius: 12px;
   margin: auto;
   padding: 16px;
@@ -216,10 +213,10 @@ export default {
 }
 .action-buttons {
   display: flex;
-  flex-direction: column; 
-  gap: 10px;  
-  align-items: center;  
-  margin-top: 4%; 
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 4%;
 }
 
 .v-text-field,
@@ -229,12 +226,12 @@ export default {
   min-height: 40px;
 }
 .v-btn {
-  width: 80%;  
+  width: 80%;
   min-width: 120px;
-  padding: 4px 8px; 
+  padding: 4px 8px;
 }
 .v-btn:hover {
-  color: #1976D2;
+  color: #1976d2;
   transform: scale(1.05);
 }
 
@@ -245,8 +242,8 @@ export default {
   align-items: center;
   font-size: 25px;
   font-weight: 700;
-  margin-top: 16px; 
-  margin-bottom: 16px; 
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .v-alert {
