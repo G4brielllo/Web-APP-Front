@@ -74,7 +74,7 @@ export default {
 
     cancelReset() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/login");
     },
 
     clearForm() {

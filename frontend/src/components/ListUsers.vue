@@ -6,7 +6,7 @@
     <v-container class="fill-height d-flex align-center justify-center">
       <v-card class="compact-card">
         <v-toolbar color="black" dark>
-          <v-toolbar-title>Lista użytkowników</v-toolbar-title>
+          <p class="toolbar-title">Lista klientów</p>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
@@ -36,17 +36,19 @@
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn
                 color="gray"
-                @click="editUser(item.id)"
+                @click="editItem(item)"
                 text
                 class="compact-btn"
-                >Edytuj</v-btn
+                outlined
+                ><v-icon>mdi-pencil</v-icon></v-btn
               >
               <v-btn
                 color="gray"
-                @click="deleteUser(item.id)"
+                @click="deleteItem(item)"
                 text
+                outlined
                 class="compact-btn"
-                >Usuń</v-btn
+                ><v-icon>mdi-delete</v-icon></v-btn
               >
             </template>
           </v-data-table>
@@ -161,6 +163,23 @@ export default {
   max-width: 1200px;
   margin: auto;
   margin-top: 20px;
+}
+
+.toolbar-title {
+  width: 30%;
+  display: flex;
+  font-size: 25px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.v-btn {
+  min-width: 120px;
+  padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  width: 20%;  
 }
 
 .compact-search-field {

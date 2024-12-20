@@ -129,7 +129,7 @@ export default {
           if (response.status === 200 || response.status === 201) {
             console.log("User saved successfully:", response.data);
             this.clearForm();
-            this.$router.push("/");
+            this.$router.push("/login");
           } else {
             console.error("Error saving user:", response.data);
           }
