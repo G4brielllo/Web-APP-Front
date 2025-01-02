@@ -274,6 +274,10 @@ export default {
 </script>
 
 <style scoped>
+.fill-height {
+  height: 100%; 
+  min-height: 100vh; 
+}
 .expanded-card {
   background-color: #f8f9fa;
   border-radius: 16px;
@@ -319,9 +323,5 @@ export default {
 .user-info {
   padding: 8px;
   text-align: center;
-}
-
-.fill-height {
-  height: 100vh;
 }
 </style>

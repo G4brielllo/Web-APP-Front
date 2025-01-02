@@ -264,8 +264,10 @@ export default {
 <style scoped>
 
 .fill-height {
-  height: 100vh;
+  height: 100%; 
+  min-height: 100vh; 
 }
+
 .toolbar-title {
   width: 30%;
   display: flex;
@@ -295,8 +297,6 @@ export default {
   max-width: 200px;
 }
 
-
-
 .compact-card {
   background-color: #fdfdfd;
   border-radius: 16px;
@@ -314,7 +314,5 @@ export default {
   border-radius: 8px;
 }
 
-.app-container {
-  max-height: 100px;
-}
+
 </style>

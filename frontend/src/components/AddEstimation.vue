@@ -194,7 +194,7 @@ export default {
     },
     cancelEstimationAdding() {
       this.clearForm();
-      this.$router.push("/");
+      this.$router.push("/listEstimations");
     },
     clearForm() {
       this.estimation.name = "";

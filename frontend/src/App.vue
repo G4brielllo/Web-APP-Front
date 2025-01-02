@@ -25,11 +25,12 @@ export default {
  text-align: center;
 
  width: 100%;
- height: 100%;
+ min-height: 100vh;
  background-color: #F3F3F3;
  background-image: linear-gradient(0deg, transparent 24%, #E1E1E1 25%, #E1E1E1 26%, transparent 27%, transparent 74%, #E1E1E1 75%, #E1E1E1 76%, transparent 77%, transparent),
      linear-gradient(90deg, transparent 24%, #E1E1E1 25%, #E1E1E1 26%, transparent 27%, transparent 74%, #E1E1E1 75%, #E1E1E1 76%, transparent 77%, transparent);
  background-size: 55px 55px;
-
+ background-attachment: fixed;
 }
+
 </style>
