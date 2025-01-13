@@ -183,7 +183,7 @@ export default {
           if (response.status === 201 || response.status === 200) {
             console.log("Estimation saved successfully:", response.data);
             this.clearForm();
-            this.$router.push("/");
+            this.$router.push("/listEstimations");
           } else {
             console.error("Error saving estimation:", response.data);
           }
