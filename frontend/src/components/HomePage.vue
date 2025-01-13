@@ -20,31 +20,50 @@
               </v-col>
             </v-row>
             <v-row justify="center">
-              <v-col cols="12" md="10" lg="8">
-                <v-card class="v-card mx-auto" max-width="800" elevation="10" rounded>
-                  <p class="headline">Panel Zarządzania</p>
-                  <v-row justify="center" class="management-cards">
-                    <v-col cols="12" sm="4">
-                      <v-card class="action-card flex-container" @click="goToListClients">
-                        <v-img :src="user" class="action-image"></v-img>
-                        <v-card-title class="card-title">Klienci</v-card-title>
-                      </v-card>
+              <v-col cols="12" md="8" lg="6">
+                <v-card class="mx-auto" max-width="800" elevation="10" rounded>
+                  <v-card-title
+                    class="headline"
+                    style="font-size: 24px; color: #333"
+                  >
+                    Home Page
+                  </v-card-title>
+                  <v-card-actions class="flex-container">
+                    <v-col cols="12" sm="4" class="flex-column-center">
+                      <v-btn
+                        class="flex-item"
+                        color="black"
+                        dark
+                        @click="goToListClients"
+                      >
+                        Zarządzaj Klientami
+                      </v-btn>
+                    
+                      <v-img  @click="goToListClients" :src="user" class="image-item"></v-img>
                     </v-col>
-
-                    <v-col cols="12" sm="4">
-                      <v-card class="action-card" @click="goToListProjects">
-                        <v-img :src="project" class="action-image"></v-img>
-                        <v-card-title class="card-title">Projekty</v-card-title>
-                      </v-card>
+                    <v-col cols="12" sm="4" class="flex-column-center">
+                      <v-btn
+                        class="flex-item"
+                        color="black"
+                        dark
+                        @click="goToListProjects"
+                      >
+                        Zarządzaj Projektami
+                      </v-btn>
+                      <v-img  @click="goToListProjects" :src="project" class="image-item"></v-img>
                     </v-col>
-
-                    <v-col cols="12" sm="4">
-                      <v-card class="action-card" @click="goToListEstimations">
-                        <v-img :src="estimation" class="action-image"></v-img>
-                        <v-card-title class="card-title">Estymacje</v-card-title>
-                      </v-card>
+                    <v-col cols="12" sm="4" class="flex-column-center">
+                      <v-btn
+                        class="flex-item"
+                        color="black"
+                        dark
+                        @click="goToListEstimations"
+                      >
+                        Zarządzaj Estymacjami
+                      </v-btn>
+                      <v-img      @click="goToListEstimations" :src="estimation" class="image-item"></v-img>
                     </v-col>
-                  </v-row>
+                  </v-card-actions>
                 </v-card>
               </v-col>
             </v-row>
@@ -54,7 +73,6 @@
     </v-container>
   </v-app>
 </template>
-
 
 <script>
 import user from "@/assets/user.png";
@@ -197,60 +215,78 @@ export default {
 </script>
 
 <style>
+.headline {
+  justify-content: center;
+}
+
 .v-card {
-  background-color: #f4f4f9;
-  padding: 20px;
+  margin: 20px;
   text-align: center;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  background-color: #f9f9f9;
 }
 
-.action-card {
-  text-align: center;
-  background-color: white;
-  border-radius: 12px;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer;
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flex-item {
   margin: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.action-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+.image-item {
+  max-width: 100px;
+  margin-top: 10px;
+}
 
-.action-image {
+.image-woman {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.image-woman-large {
   width: 100px;
   height: 100px;
-  margin: auto;
-  padding: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-
-.card-title {
-  font-size: 20px;
+.subtitle-1 {
+  font-size: 14px;
   font-weight: bold;
-  color: #000000;
-  text-align: center;
-  margin: 10px 0;
 }
 
-.headline {
-  font-size: 24px;
-  font-weight: 700;
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 20px;
+.position-relative {
+  position: relative;
 }
 
-.management-cards {
-  margin-top: 20px;
-  gap: 20px;
+.user-info {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: none;
 }
 
-.v-alert {
-  margin-bottom: 20px;
+.v-navigation-drawer:hover .image-woman {
+  width: 100px;
+  height: 100px;
 }
-
 </style>
